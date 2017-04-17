@@ -43,6 +43,13 @@ public class ProtocolSpec {
     }
 
     int maxTrafficInInterval(int intervalLength) {
+        if (intervalLength >= 2 * cycleLength) {
+            int fullCycles = (intervalLength / cycleLength) - 1;
+            int remainingIntervalLength = intervalLength - (fullCycles * cycleLength);
+
+            return maxTrafficInInterval(remainingIntervalLength) + fullCycles * maxTraffic(cycleLength);
+        }
+
         int maxTraffic = 0;
         for (Message msg : items) {
             int traffic = msg.maxTraffic(msg.transmissionTime + intervalLength);
