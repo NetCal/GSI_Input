@@ -36,12 +36,17 @@ public class ProtocolSpec {
         return new ArrivalCurve(curve);
     }
 
+    public void add(Message message) {
+        this.items.add(message);
+    }
+
     int maxTraffic(int toTime) {
         if (items.isEmpty()) return 0;
 
         return items.get(0).maxTraffic(toTime);
     }
 
+    // TODO caching
     int maxTrafficInInterval(int intervalLength) {
         if (intervalLength >= 2 * cycleLength) {
             int fullCycles = (intervalLength / cycleLength) - 1;

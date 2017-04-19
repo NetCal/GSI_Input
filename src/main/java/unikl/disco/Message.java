@@ -34,7 +34,7 @@ public class Message {
     }
 
     public int maxTraffic(int toTime) {
-        if (toTime >= transmissionTime) {
+        if (toTime <= transmissionTime) {
             return 0;
         }
 
