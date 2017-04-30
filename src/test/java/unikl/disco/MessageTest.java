@@ -53,12 +53,20 @@ public class MessageTest extends TestCase {
     public void testAddAndRemove() throws Exception {
         assertEquals(17, first.maxTraffic(10));
 
-        Message msg = new Message(3, 9, spec);
-        last.addNext(msg);
+        try {
+            Message msg = new Message(3, 9, spec);
+            last.addNext(msg);
+            fail("Should not be able to add messages after traffic has been queried");
+        } catch (IllegalStateException ex) {
+            // Pass
+        }
+
+        /*
         assertEquals(20, first.maxTraffic(10));
 
         last.removeNext(msg);
         assertEquals(17, first.maxTraffic(10));
+        */
     }
 
     public void testGetNumOptions() throws Exception {

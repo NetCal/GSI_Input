@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Message {
     private Set<Message> next = new HashSet<>();
-    private Map<Integer, Integer> messageSequenceSizeCache = new HashMap<>();
+    private Map<Integer, Integer> intervalTrafficCache = new HashMap<>();
 
     final int transmissionTime;
     private final int size;
@@ -20,13 +20,17 @@ public class Message {
     }
 
     public void addNext(Message item) {
+        if (!intervalTrafficCache.isEmpty()) {
+            throw new IllegalStateException("Adding a message after the traffic cache has been populated is not supported");
+        }
         next.add(item);
-        messageSequenceSizeCache = new HashMap<>();
     }
 
     public void removeNext(Message item) {
+        if (!intervalTrafficCache.isEmpty()) {
+            throw new IllegalStateException("Adding a message after the traffic cache has been populated is not supported");
+        }
         next.remove(item);
-        messageSequenceSizeCache = new HashMap<>();
     }
 
     public int getNumOptions() {
@@ -38,10 +42,18 @@ public class Message {
             return 0;
         }
 
-        if (next.isEmpty()) {
-            return size + spec.maxTraffic(toTime - spec.cycleLength);
-        } else {
-            return size + next.stream().mapToInt(msg -> msg.maxTraffic(toTime)).max().getAsInt();
+        if (intervalTrafficCache.containsKey(toTime)) {
+            return intervalTrafficCache.get(toTime);
         }
+
+        int traffic;
+        if (next.isEmpty()) {
+            traffic = size + spec.maxTraffic(toTime - spec.cycleLength);
+        } else {
+            traffic = size + next.stream().mapToInt(msg -> msg.maxTraffic(toTime)).max().getAsInt();
+        }
+
+        intervalTrafficCache.put(toTime, traffic);
+        return traffic;
     }
 }
