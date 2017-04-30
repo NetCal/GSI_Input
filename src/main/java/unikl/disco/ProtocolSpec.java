@@ -37,6 +37,9 @@ public class ProtocolSpec {
     }
 
     public void add(Message message) {
+        if (message.transmissionTime < 0 || message.transmissionTime >= cycleLength) {
+            throw new IllegalArgumentException("Transmission time not in interval [0, cycle-length - 1]");
+        }
         this.items.add(message);
     }
 

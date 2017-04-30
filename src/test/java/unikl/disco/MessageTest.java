@@ -77,8 +77,8 @@ public class MessageTest extends TestCase {
         assertEquals("to(6) picks path left and ignores message at right", 11, first.maxTraffic(6));
         assertEquals("to(7) picks path left and ignores message at right", 11, first.maxTraffic(7));
         assertEquals("to(8) switches to right path", 16, first.maxTraffic(8));
-        assertEquals("to(9) includes last via right", 17, first.maxTraffic(9));
-        assertEquals("to(10) includes last via right", 17, first.maxTraffic(10));
+        assertEquals("to(9) includes secondLast via right", 17, first.maxTraffic(9));
+        assertEquals("to(10) includes secondLast via right", 17, first.maxTraffic(10));
         assertEquals("to(11) has wrapover but does not include first", 17, first.maxTraffic(11));
         assertEquals("to(12) has wrapover and includes first", 21, first.maxTraffic(12));
     }
