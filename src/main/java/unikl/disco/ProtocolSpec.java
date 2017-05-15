@@ -29,15 +29,42 @@ public class ProtocolSpec {
     public ArrivalCurve createArrivalCurve() {
         Curve curve = new ArrivalCurve(0);
 
-        curve.addSegment(LinearSegment.createZeroSegment());
-        int lastTraffic = 0;
-        for (int intervalLen = 0; intervalLen < cycleLength; intervalLen++) {
-            int traffic = maxTrafficInInterval(intervalLen);
-            LinearSegment segment = new LinearSegment(intervalLen - 1, lastTraffic, traffic - lastTraffic);
-            curve.addSegment(segment);
+        Num lastSegmentGrad = NumFactory.create(maxTraffic(cycleLength), cycleLength);
+        int lastSegmentStartPoint = 0;
+        Num lastSegmentVerticalOffset = NumFactory.createZero();
 
-            lastTraffic = traffic;
+        for (int i = 0; i <= 2 * cycleLength; i++) {
+            // A(x) - increment/cyclelength
+            // = (cyclelength*A(x) - increment) / cyclelength
+            Num thisSegmentVerticalOffset = NumFactory.create(cycleLength * maxTrafficInInterval(i) - i * maxTraffic(cycleLength), cycleLength);
+            if (thisSegmentVerticalOffset.geq(lastSegmentVerticalOffset)) {
+                lastSegmentVerticalOffset = thisSegmentVerticalOffset;
+                lastSegmentStartPoint = i;
+            }
         }
+
+        Num lastSegmentX = NumFactory.create(lastSegmentStartPoint);
+        Num lastSegmentY = NumFactory.create(maxTrafficInInterval(lastSegmentStartPoint));
+        LinearSegment lastSegment = new LinearSegment(lastSegmentX, lastSegmentY, lastSegmentGrad, true);
+
+        List<Integer> previousSegments = getInitialConcaveHullSegments(lastSegmentStartPoint, lastSegmentGrad);
+        if (previousSegments == null) {
+            throw new RuntimeException("unable to calculate concave hull");
+        }
+
+        for (int i = 0; i < previousSegments.size() - 1; i++) {
+            int startX = previousSegments.get(i);
+            int endX = previousSegments.get(i+1);
+
+            LinearSegment segment = new LinearSegment(NumFactory.create(startX), NumFactory.create(maxTrafficInInterval(startX)), slope(startX, endX), true);
+            curve.addSegment(segment);
+        }
+
+        Integer secondLastX = previousSegments.get(previousSegments.size() - 1);
+        LinearSegment secondToLast = new LinearSegment(NumFactory.create(secondLastX), NumFactory.create(maxTrafficInInterval(secondLastX)), slope(secondLastX, lastSegmentStartPoint), true);
+        curve.addSegment(secondToLast);
+
+        curve.addSegment(lastSegment);
 
         return new ArrivalCurve(curve);
     }
@@ -48,7 +75,7 @@ public class ProtocolSpec {
 
     private List<Integer> getInitialConcaveHullSegments(int segmentEnd, Num minSlope) {
         if (segmentEnd == 1) {
-            ArrayList<Integer> result = new ArrayList();
+            ArrayList<Integer> result = new ArrayList<>();
             result.add(0); // Initial segment starts at 0
             return result;
         }
@@ -65,6 +92,7 @@ public class ProtocolSpec {
                 List<Integer> segments = getInitialConcaveHullSegments(segmentStart, currentSlope);
                 if (segments != null) {
                     segments.add(segmentStart);
+                    return segments;
                 }
             }
 
