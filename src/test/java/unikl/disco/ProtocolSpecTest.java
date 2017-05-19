@@ -1,6 +1,10 @@
 package unikl.disco;
 
 import junit.framework.TestCase;
+import unikl.disco.curves.ArrivalCurve;
+import unikl.disco.curves.LinearSegment;
+import unikl.disco.numbers.Num;
+import unikl.disco.numbers.NumFactory;
 
 /**
  * @author Malte Schütze
@@ -54,6 +58,24 @@ public class ProtocolSpecTest extends TestCase {
     }
 
     public void testCreateArrivalCurve() throws Exception {
+        ArrivalCurve curve = spec.createArrivalCurve();
+        for (int i = 1; i < curve.getSegmentCount(); i++) {
+            LinearSegment segment = curve.getSegment(i);
+            LinearSegment previous = curve.getSegment(i - 1);
+            if (!previous.isLeftopen() && previous.getX().eqZero() && previous.getGrad().eqZero() && segment.getX().eqZero()) {
+                // "zero" segment at begin of hull
+                continue;
+            }
+
+            assertTrue("Increasing gradient in concave hull: " + previous + " -> " + segment, segment.getGrad().leq(previous.getGrad()));
+        }
+
+
+        for (int i = 0; i < spec.cycleLength * 4; i++) {
+            LinearSegment segment = curve.getSegment(curve.getSegmentDefining(NumFactory.create(i)));
+            Num y = segment.f(NumFactory.create(i));
+            assertTrue("Concave hull below strict arrival curve",y.doubleValue() >= spec.maxTrafficInInterval(i));
+        }
     }
 
     public void testAdd() throws Exception {

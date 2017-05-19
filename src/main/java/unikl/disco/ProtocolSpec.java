@@ -27,7 +27,7 @@ public class ProtocolSpec {
     }
 
     public ArrivalCurve createArrivalCurve() {
-        Curve curve = new ArrivalCurve(0);
+        Curve curve = new ArrivalCurve();
 
         Num lastSegmentGrad = NumFactory.create(maxTraffic(cycleLength), cycleLength);
         int lastSegmentStartPoint = 0;
