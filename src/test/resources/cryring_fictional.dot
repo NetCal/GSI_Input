@@ -1,0 +1,121 @@
+digraph G {
+graph [root="CRY_INIT_CAL_0", nodesep=0.6, mindist=1.0, ranksep=1.0, overlap=false]
+node [shape="oval", color="black"]
+edge [type="defDst", color="red"]
+
+//Cryring Init (fictional)
+CRY_INIT_CAL_0        [type="TMsg", fid=0, gid=201, evtno=257,  sid=1, bpid=2, tOffs=0,          par=5214769];
+CRY_INIT_CAL_1        [type="TMsg", fid=0, gid=201, evtno=257,  sid=1, bpid=2, tOffs=500,        par=80471];
+B_CRY_INIT            [type="Block", shape="rectangle", color="red", tPeriod=1000000];
+
+//Cryring Standard Operation (real)
+CRY_0_SEQ_START_0   [type="TMsg", fid=0, gid=201, evtno=257,  sid=1, bpid=2, tOffs=0,          par=0];
+CRY_0_SEQ_START_1   [type="TMsg", fid=0, gid=202, evtno=257,  sid=1, bpid=3, tOffs=0,          par=0];
+CRY_0_SEQ_START_2   [type="TMsg", fid=0, gid=203, evtno=257,  sid=1, bpid=1, tOffs=0,          par=0];
+CRY_0_SEQ_START_3   [type="TMsg", fid=0, gid=210, evtno=257,  sid=1, bpid=5, tOffs=0,          par=0];
+CRY_0_RF_PREP_PAUSE [type="TMsg", fid=0, gid=202, evtno=291,  sid=1, bpid=3, tOffs=488100000,  par=0];
+CRY_0_RF_STOP_PAUSE [type="TMsg", fid=0, gid=202, evtno=292,  sid=1, bpid=3, tOffs=490700000,  par=0];
+CRY_0_RF_PREP       [type="TMsg", fid=0, gid=202, evtno=290,  sid=1, bpid=3, tOffs=491700000,  par=0];
+CRY_0_BUMPER_CHARGE [type="TMsg", fid=0, gid=210, evtno=1024, sid=1, bpid=5, tOffs=491885893,  par=0];
+CRY_0_BI_TRIGGER    [type="TMsg", fid=0, gid=202, evtno=280,  sid=1, bpid=2, tOffs=491950000,  par=0];
+CRY_0_BEAM_ON_0     [type="TMsg", fid=0, gid=201, evtno=518,  sid=1, bpid=2, tOffs=492200000,  par=0];
+CRY_0_BEAM_ON_1     [type="TMsg", fid=0, gid=202, evtno=518,  sid=1, bpid=3, tOffs=492200000,  par=0];
+CRY_0_BI_MEAS_1     [type="TMsg", fid=0, gid=201, evtno=281,  sid=1, bpid=2, tOffs=492201000,  par=0];
+CRY_0_BEAM_ON_2     [type="TMsg", fid=0, gid=210, evtno=518,  sid=1, bpid=5, tOffs=492203393,  par=0];
+CRY_0_BI_MEAS_2     [type="TMsg", fid=0, gid=201, evtno=282,  sid=1, bpid=2, tOffs=492951000,  par=0];
+CRY_0_BEAM_OFF_0    [type="TMsg", fid=0, gid=201, evtno=520,  sid=1, bpid=2, tOffs=493000000,  par=0];
+CRY_0_BEAM_OFF_1    [type="TMsg", fid=0, gid=202, evtno=520,  sid=1, bpid=3, tOffs=493000000,  par=0];
+CRY_0_SEQ_START_4   [type="TMsg", fid=0, gid=210, evtno=257,  sid=1, bpid=4, tOffs=500000000,  par=0];
+CRY_0_SYNCH_0       [type="TMsg", fid=0, gid=210, evtno=312,  sid=1, bpid=4, tOffs=620000000,  par=0];
+CRY_0_BP_START      [type="TMsg", fid=0, gid=210, evtno=256,  sid=1, bpid=5, tOffs=1620000000, par=0];
+CRY_0_SYNCH_1       [type="TMsg", fid=0, gid=210, evtno=312,  sid=1, bpid=5, tOffs=1740000000, par=0];
+CRY_0_BEAM_OFF_2    [type="TMsg", fid=0, gid=210, evtno=520,  sid=1, bpid=5, tOffs=2740000000  par=0];
+B_CRY_0             [type="Block", shape="rectangle", color="red", tPeriod=2750000000];
+
+//Cryring Dry-Run Operation (fictional)
+
+CRY_1_SEQ_START_0   [type="TMsg", fid=0, gid=201, evtno=257,  sid=1, bpid=2, tOffs=0,          par=0];
+CRY_1_SEQ_START_1   [type="TMsg", fid=0, gid=202, evtno=257,  sid=1, bpid=3, tOffs=0,          par=0];
+CRY_1_RF_PREP_PAUSE [type="TMsg", fid=0, gid=202, evtno=291,  sid=1, bpid=3, tOffs=408100000,  par=0];
+CRY_1_RF_STOP_PAUSE [type="TMsg", fid=0, gid=202, evtno=292,  sid=1, bpid=3, tOffs=490000000,  par=0];
+CRY_1_RF_PREP       [type="TMsg", fid=0, gid=202, evtno=290,  sid=1, bpid=3, tOffs=490000000,  par=0];
+CRY_1_BUMPER_CHARGE [type="TMsg", fid=0, gid=210, evtno=1024, sid=1, bpid=5, tOffs=491885893,  par=0];
+CRY_1_BI_TRIGGER    [type="TMsg", fid=0, gid=202, evtno=280,  sid=1, bpid=2, tOffs=491900000,  par=0];
+CRY_1_BEAM_ON_0     [type="TMsg", fid=0, gid=201, evtno=518,  sid=1, bpid=2, tOffs=492200000,  par=0];
+CRY_1_BEAM_ON_1     [type="TMsg", fid=0, gid=202, evtno=518,  sid=1, bpid=3, tOffs=492200000,  par=0];
+CRY_1_BI_MEAS_1     [type="TMsg", fid=0, gid=201, evtno=281,  sid=1, bpid=2, tOffs=492201000,  par=0];
+CRY_1_BEAM_ON_2     [type="TMsg", fid=0, gid=210, evtno=518,  sid=1, bpid=5, tOffs=492203393,  par=0];
+CRY_1_BI_MEAS_2     [type="TMsg", fid=0, gid=201, evtno=282,  sid=1, bpid=2, tOffs=492951000,  par=0];
+CRY_1_BEAM_OFF_0    [type="TMsg", fid=0, gid=201, evtno=520,  sid=1, bpid=2, tOffs=493000000,  par=0];
+CRY_1_BEAM_OFF_1    [type="TMsg", fid=0, gid=202, evtno=520,  sid=1, bpid=3, tOffs=493000000,  par=0];
+CRY_1_SEQ_START_4   [type="TMsg", fid=0, gid=210, evtno=257,  sid=1, bpid=4, tOffs=500000000,  par=0];
+CRY_1_SYNCH_0       [type="TMsg", fid=0, gid=210, evtno=312,  sid=1, bpid=4, tOffs=620000000,  par=0];
+CRY_1_BP_START      [type="TMsg", fid=0, gid=210, evtno=256,  sid=1, bpid=5, tOffs=1000000000, par=0];
+CRY_1_SYNCH_1       [type="TMsg", fid=0, gid=210, evtno=312,  sid=1, bpid=5, tOffs=1500000000, par=0];
+CRY_1_BEAM_OFF_2    [type="TMsg", fid=0, gid=210, evtno=520,  sid=1, bpid=5, tOffs=2740000000  par=0];
+B_CRY_1             [type="Block", shape="rectangle", color="red", tPeriod=2750000000];
+
+//Cryring Halt (fictional)
+CRY_HALT            [type="TMsg", fid=0, gid=201, evtno=257,  sid=1, bpid=2, tOffs=0,        par=80471];
+B_CRY_HALT          [type="Block", shape="rectangle", color="red", tPeriod=500000];
+
+
+CRY_INIT_CAL_0      -> CRY_INIT_CAL_1 
+CRY_INIT_CAL_1      -> B_CRY_INIT 
+B_CRY_INIT          -> CRY_0_SEQ_START_0
+
+  
+CRY_0_SEQ_START_0   -> CRY_0_SEQ_START_1   
+CRY_0_SEQ_START_1   -> CRY_0_SEQ_START_2   
+CRY_0_SEQ_START_2   -> CRY_0_SEQ_START_3   
+CRY_0_SEQ_START_3   -> CRY_0_RF_PREP_PAUSE 
+CRY_0_RF_PREP_PAUSE -> CRY_0_RF_STOP_PAUSE 
+CRY_0_RF_STOP_PAUSE -> CRY_0_RF_PREP       
+CRY_0_RF_PREP       -> CRY_0_BUMPER_CHARGE 
+CRY_0_BUMPER_CHARGE -> CRY_0_BI_TRIGGER    
+CRY_0_BI_TRIGGER    -> CRY_0_BEAM_ON_0     
+CRY_0_BEAM_ON_0     -> CRY_0_BEAM_ON_1     
+CRY_0_BEAM_ON_1     -> CRY_0_BI_MEAS_1     
+CRY_0_BI_MEAS_1     -> CRY_0_BEAM_ON_2     
+CRY_0_BEAM_ON_2     -> CRY_0_BI_MEAS_2     
+CRY_0_BI_MEAS_2     -> CRY_0_BEAM_OFF_0    
+CRY_0_BEAM_OFF_0    -> CRY_0_BEAM_OFF_1    
+CRY_0_BEAM_OFF_1    -> CRY_0_SEQ_START_4   
+CRY_0_SEQ_START_4   -> CRY_0_SYNCH_0       
+CRY_0_SYNCH_0       -> CRY_0_BP_START      
+CRY_0_BP_START      -> CRY_0_SYNCH_1       
+CRY_0_SYNCH_1       -> CRY_0_BEAM_OFF_2
+CRY_0_BEAM_OFF_2    -> B_CRY_0
+B_CRY_0             -> CRY_0_SEQ_START_0
+B_CRY_0             -> CRY_1_SEQ_START_0 [type="altDst", color="black"];
+
+CRY_1_SEQ_START_0   -> CRY_1_SEQ_START_1   
+CRY_1_SEQ_START_1   -> CRY_1_RF_PREP_PAUSE 
+CRY_1_RF_PREP_PAUSE -> CRY_1_RF_STOP_PAUSE 
+CRY_1_RF_STOP_PAUSE -> CRY_1_RF_PREP       
+CRY_1_RF_PREP       -> CRY_1_BUMPER_CHARGE 
+CRY_1_BUMPER_CHARGE -> CRY_1_BI_TRIGGER    
+CRY_1_BI_TRIGGER    -> CRY_1_BEAM_ON_0     
+CRY_1_BEAM_ON_0     -> CRY_1_BEAM_ON_1     
+CRY_1_BEAM_ON_1     -> CRY_1_BI_MEAS_1     
+CRY_1_BI_MEAS_1     -> CRY_1_BEAM_ON_2     
+CRY_1_BEAM_ON_2     -> CRY_1_BI_MEAS_2     
+CRY_1_BI_MEAS_2     -> CRY_1_BEAM_OFF_0    
+CRY_1_BEAM_OFF_0    -> CRY_1_BEAM_OFF_1    
+CRY_1_BEAM_OFF_1    -> CRY_1_SEQ_START_4   
+CRY_1_SEQ_START_4   -> CRY_1_SYNCH_0       
+CRY_1_SYNCH_0       -> CRY_1_BP_START      
+CRY_1_BP_START      -> CRY_1_SYNCH_1       
+CRY_1_SYNCH_1       -> CRY_1_BEAM_OFF_2
+CRY_1_BEAM_OFF_2    -> B_CRY_1
+B_CRY_1             -> CRY_1_SEQ_START_0 
+B_CRY_1             -> CRY_0_SEQ_START_0 [type="altDst", color="black"];
+
+B_CRY_0             -> CRY_HALT [type="altDst", color="black"];
+B_CRY_1             -> CRY_HALT [type="altDst", color="black"];
+CRY_HALT            -> B_CRY_HALT 
+B_CRY_HALT          -> B_CRY_HALT 
+B_CRY_HALT          -> CRY_INIT_CAL_0 [type="altDst", color="black"];
+
+
+}
