@@ -1,9 +1,6 @@
 package unikl.disco;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Malte Schütze
@@ -41,6 +38,10 @@ public class Block {
         this.nextBlocks.add(block);
     }
 
+    public Set<Block> getNextBlocks() {
+        return Collections.unmodifiableSet(nextBlocks);
+    }
+
     public static class Message {
         private final String label;
         private final long offset;
@@ -56,6 +57,18 @@ public class Block {
 
         public Block getBlock() {
             return block;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public long getOffset() {
+            return offset;
         }
     }
 }

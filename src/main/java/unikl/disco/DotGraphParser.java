@@ -152,6 +152,7 @@ public class DotGraphParser {
             }
         }
 
+        // First add messages
         for (Map.Entry<MutableNode, Block> entry: blockMap.entrySet()) {
             MutableNode inputBlock = entry.getKey();
             Block block = entry.getValue();
@@ -163,13 +164,22 @@ public class DotGraphParser {
             for (int i = messages.size() - 1; i >= 0; i--) {
                 block.addMessage(messages.get(i));
             }
+        }
+
+        // Then link blocks between each other, because we rely on all messages
+        // being added for sanity checks
+        for (Map.Entry<MutableNode, Block> entry: blockMap.entrySet()) {
+            MutableNode inputBlock = entry.getKey();
+            Block block = entry.getValue();
 
             // Connect blocks
             for (Link link: inputBlock.links()) {
                 MutableNode to = ((MutableNodePoint) link.to()).node();
                 if (to.equals(inputBlock)) {
+                    // Direct cycle to self
                     block.addNext(block);
                 } else {
+                    // Link to other block
                     Block.Message targetMessage = messageMap.get(to);
                     Block targetBlock = targetMessage.getBlock();
 
