@@ -1,6 +1,7 @@
 package unikl.disco;
 
 
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -22,5 +23,9 @@ public class ProtocolGraph {
 
     public int getBlockCount() {
         return blocks.size();
+    }
+
+    public Collection<Block> getBlocks() {
+        return blocks.values();
     }
 }

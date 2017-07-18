@@ -24,7 +24,7 @@ public class DotGraphParser {
     }
 
     private boolean isAttrPresent(MutableNode node, String targetAttr) {
-        for (Map.Entry<String, Object> attr: node.attrs()) {
+        for (Map.Entry<String, Object> attr : node.attrs()) {
             if (attr.getKey().equals(targetAttr)) {
                 return true;
             }
@@ -34,7 +34,7 @@ public class DotGraphParser {
     }
 
     private String getAttrString(MutableNode node, String targetAttr) {
-        for (Map.Entry<String, Object> attr: node.attrs()) {
+        for (Map.Entry<String, Object> attr : node.attrs()) {
             if (attr.getKey().equals(targetAttr)) {
                 return (String) attr.getValue();
             }
@@ -44,7 +44,7 @@ public class DotGraphParser {
     }
 
     private long getAttrLong(MutableNode node, String targetAttr) {
-        for (Map.Entry<String, Object> attr: node.attrs()) {
+        for (Map.Entry<String, Object> attr : node.attrs()) {
             if (attr.getKey().equals(targetAttr)) {
                 return Long.parseLong(attr.getValue().toString());
             }
@@ -56,12 +56,12 @@ public class DotGraphParser {
     private int inDegreeOf(MutableGraph graph, MutableNode node) {
         int acc = 0;
 
-        for (MutableNode other: graph.nodes()) {
+        for (MutableNode other : graph.nodes()) {
             if (other.equals(node)) {
                 continue; // Ignore block-to-same-block links (interpreted as block-to-first-message links w.l.o.g)
             }
 
-            for (Link link: other.links()) {
+            for (Link link : other.links()) {
                 if (((MutableNodePoint) link.to()).node().equals(node)) {
                     if (getAttrString(other, "type").equals("Block")) {
                         throw new IllegalStateException("Block to block link: " + other.label() + " -> " + node.label());
@@ -95,12 +95,12 @@ public class DotGraphParser {
         // input block -> output block
         Map<MutableNode, Block> blockMap = new HashMap<>();
         // input block -> output messages belonging to that block
-        Map<MutableNode, List<Block.Message>> messagesInBlock = new HashMap<>();
+        Map<MutableNode, List<Message>> messagesInBlock = new HashMap<>();
         // input message -> output message
-        Map<MutableNode, Block.Message> messageMap = new HashMap<>();
+        Map<MutableNode, Message> messageMap = new HashMap<>();
 
 
-        for (MutableNode vertex: rawGraph.nodes()) {
+        for (MutableNode vertex : rawGraph.nodes()) {
             if (getAttrString(vertex, "type").equals("Block")) {
                 // Verify that block node was parsed correctly
                 if (inDegreeOf(rawGraph, vertex) != 1) {
@@ -134,7 +134,7 @@ public class DotGraphParser {
                 // so we can extend the list easily if we find an earlier message later
                 // We fill node slots between the node and already added nodes with null and replace them
                 // when we find them
-                List<Block.Message> list = messagesInBlock.get(current);
+                List<Message> list = messagesInBlock.get(current);
                 while (idxBack > list.size() - 1) {
                     list.add(null);
                 }
@@ -144,23 +144,23 @@ public class DotGraphParser {
                     size = (int) getAttrLong(vertex, "size");
                 }
 
-                Block.Message msg = new Block.Message(vertex.label().toString(), blockMap.get(current), getAttrLong(vertex, "tOffs"), size);
+                Message msg = new Message(vertex.label().toString(), blockMap.get(current), getAttrLong(vertex, "tOffs"), size);
                 list.set(idxBack, msg);
                 messageMap.put(vertex, msg);
             } else {
-                throw new IllegalStateException("Unsupported node type '" + getAttrString(vertex,"type"));
+                throw new IllegalStateException("Unsupported node type '" + getAttrString(vertex, "type"));
             }
         }
 
         // First add messages
-        for (Map.Entry<MutableNode, Block> entry: blockMap.entrySet()) {
+        for (Map.Entry<MutableNode, Block> entry : blockMap.entrySet()) {
             MutableNode inputBlock = entry.getKey();
             Block block = entry.getValue();
 
             graph.addBlock(block);
 
             // We stored the messages backwards, turn them back around
-            List<Block.Message> messages = messagesInBlock.get(inputBlock);
+            List<Message> messages = messagesInBlock.get(inputBlock);
             for (int i = messages.size() - 1; i >= 0; i--) {
                 block.addMessage(messages.get(i));
             }
@@ -168,19 +168,19 @@ public class DotGraphParser {
 
         // Then link blocks between each other, because we rely on all messages
         // being added for sanity checks
-        for (Map.Entry<MutableNode, Block> entry: blockMap.entrySet()) {
+        for (Map.Entry<MutableNode, Block> entry : blockMap.entrySet()) {
             MutableNode inputBlock = entry.getKey();
             Block block = entry.getValue();
 
             // Connect blocks
-            for (Link link: inputBlock.links()) {
+            for (Link link : inputBlock.links()) {
                 MutableNode to = ((MutableNodePoint) link.to()).node();
                 if (to.equals(inputBlock)) {
                     // Direct cycle to self
                     block.addNext(block);
                 } else {
                     // Link to other block
-                    Block.Message targetMessage = messageMap.get(to);
+                    Message targetMessage = messageMap.get(to);
                     Block targetBlock = targetMessage.getBlock();
 
                     // Verify we are pointing to the first message in a block

@@ -14,6 +14,7 @@ public class DotGraphParserTest extends TestCase {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
         parser = new DotGraphParser(DotGraphParser.class.getResourceAsStream("/cryring_fictional.dot"));
         graph = parser.parse();
     }
@@ -45,7 +46,7 @@ public class DotGraphParserTest extends TestCase {
 
     public void testBlockMessageContents() {
         // Single message, correctly parsed
-        Block.Message message = graph.getBlock("B_CRY_HALT").getMessage(0);
+        Message message = graph.getBlock("B_CRY_HALT").getMessage(0);
         assertEquals("CRY_HALT", message.getLabel());
         assertEquals(1, message.getSize());
         assertEquals(0, message.getOffset());
@@ -73,8 +74,19 @@ public class DotGraphParserTest extends TestCase {
         assertTrue(bCry0NextBlocks.contains(graph.getBlock("B_CRY_HALT")));
 
         Set<Block> bCryHaltNextBlocks = graph.getBlock("B_CRY_HALT").getNextBlocks();
-        assertEquals(2, bCryHaltNextBlocks .size());
-        assertTrue(bCryHaltNextBlocks .contains(graph.getBlock("B_CRY_HALT")));
-        assertTrue(bCryHaltNextBlocks .contains(graph.getBlock("B_CRY_INIT")));
+        assertEquals(2, bCryHaltNextBlocks.size());
+        assertTrue(bCryHaltNextBlocks.contains(graph.getBlock("B_CRY_HALT")));
+        assertTrue(bCryHaltNextBlocks.contains(graph.getBlock("B_CRY_INIT")));
+
+
+        Set<Block> bCry1PreviousBlocks = graph.getBlock("B_CRY_1").getPreviousBlocks();
+        assertEquals(2, bCry1PreviousBlocks.size());
+        assertTrue(bCry1PreviousBlocks.contains(graph.getBlock("B_CRY_0")));
+        assertTrue(bCry1PreviousBlocks.contains(graph.getBlock("B_CRY_1")));
+    }
+
+    public void testBlockPeriod() {
+        assertEquals(500000, graph.getBlock("B_CRY_HALT").getPeriod());
+        assertEquals(2750000000L, graph.getBlock("B_CRY_1").getPeriod());
     }
 }
