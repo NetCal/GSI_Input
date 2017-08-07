@@ -175,7 +175,7 @@ public class Block {
      * @return an upper bound on the traffic generated in an interval of length <code>time</code> beginning somewhere
      * in this block
      */
-    public int maxTraffic(int time) {
+    public int maxTraffic(long time) {
         int max = 0;
         for (int i = 0; i < trafficIncrementTimes.size(); i++) {
             long offset = trafficIncrementTimes.get(i);

@@ -28,4 +28,16 @@ public class ProtocolGraph {
     public Collection<Block> getBlocks() {
         return blocks.values();
     }
+
+    /**
+     * Calculate the maximum traffic generated over all possible intervals of length <code>intervalLength</code>
+     * @param intervalLength The length of the interval to check
+     * @return The maximum traffic generated
+     */
+    public int maxTraffic(long intervalLength) {
+        return blocks.values().stream()
+                .mapToInt(b -> b.maxTraffic(intervalLength))
+                .max()
+                .orElse(0); // Max returns none if there are no blocks, therefore no traffic
+    }
 }
