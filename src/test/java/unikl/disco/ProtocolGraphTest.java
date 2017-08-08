@@ -22,4 +22,7 @@ public class ProtocolGraphTest extends TestCase {
         assertEquals(203, graph.maxTraffic(100000000));
     }
 
+    public void testApproximateSubadditive() throws Exception {
+        PseudoPeriodicFunction f = graph.approximateSubadditive(10_000_000_000L);
+    }
 }

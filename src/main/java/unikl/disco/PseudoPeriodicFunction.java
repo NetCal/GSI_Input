@@ -8,7 +8,6 @@ import unikl.disco.numbers.implementations.RationalBigInt;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,8 +15,11 @@ import java.util.List;
  */
 public class PseudoPeriodicFunction {
 
-    private ArrayList<Long> incrementTimeSteps = new ArrayList<>();
-    private ArrayList<Integer> incrementValues = new ArrayList<>();
+    private StepFunction initialPart = new StepFunction();
+    // Readonly view to initalPart internal repr.
+    private List<Long> incrementTimeSteps = initialPart.getIncrementTimeSteps();
+    private List<Integer> incrementValues = initialPart.getIncrementValues();
+
     private final long periodBegin;
     private final long periodLength;
     private final int periodIncrement;
@@ -29,37 +31,12 @@ public class PseudoPeriodicFunction {
     }
 
     public void setValueAt(long time, int value) {
-        if (incrementTimeSteps.isEmpty()) {
-            incrementTimeSteps.add(time);
-            incrementValues.add(value);
-            return;
-        }
-
-        if (time <= incrementTimeSteps.get(incrementTimeSteps.size() - 1)) {
-            throw new IllegalArgumentException("Tried to go back in time");
-        }
-
-        if (incrementValues.get(incrementValues.size() - 1) == value) {
-            return; // only store distinct times + values
-        }
-
-        incrementTimeSteps.add(time);
-        incrementValues.add(value);
+        initialPart.setValueAt(time, value);
     }
 
     public long getValue(long time) {
         if (time < periodBegin + periodLength) {
-            int idx = Collections.binarySearch(incrementTimeSteps, time);
-            if (idx >= 0) {
-                return incrementValues.get(idx);
-            } else {
-                idx = -(idx + 1);
-                if (idx == 0) {
-                    return 0;
-                } else {
-                    return incrementValues.get(idx - 1);
-                }
-            }
+            return initialPart.getValue(time);
         }
 
         long repetitions = (time - periodBegin) / periodLength;
@@ -80,6 +57,9 @@ public class PseudoPeriodicFunction {
         // This guarantees that the last segment will always be above the curve
         int lastSegmentStartIdx = 0;
         Num maxVerticalOffset = rational(0, 1);
+
+        List<Long> incrementTimeSteps = initialPart.getIncrementTimeSteps();
+        List<Integer> incrementValues = initialPart.getIncrementValues();
 
         // Note that we only need to check the increment points, every other point will be closer to the long-term line
         for (int i = 0; i < incrementTimeSteps.size(); i++) {
@@ -132,6 +112,8 @@ public class PseudoPeriodicFunction {
      *         include if the time at idx 0 is not zero
      */
     private List<Integer> getConcaveHullSegmentPoints(int toIdx, Num minSlope) {
+
+
         if (toIdx == 0) {
             if (incrementTimeSteps.isEmpty() || incrementTimeSteps.get(toIdx) == 0) {
                 return new ArrayList<>();

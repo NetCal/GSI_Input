@@ -13,10 +13,8 @@ public class Block {
     private Set<Block> previousBlocks = new HashSet<>();
     private Set<Block> nextBlocks = new HashSet<>();
 
-    // For the stepwise function of the flow in this block, note the times where the function "steps"
-    private List<Long> trafficIncrementTimes = new ArrayList<>();
-    // And to what traffic it steps
-    private List<Integer> trafficAtTime = new ArrayList<>();
+    // For the step function of the flow in this block, note the times where the function "steps", and to what traffc it steps
+    private StepFunction maxPrefix = new StepFunction();
 
     public Block(String label, long period) {
         this.label = label;
@@ -31,20 +29,7 @@ public class Block {
         this.messages.add(message);
         this.totalTraffic += message.getSize();
 
-        if (trafficIncrementTimes.isEmpty()) {
-            // Initialize stepwise list
-            trafficIncrementTimes.add(message.getOffset());
-            trafficAtTime.add(message.getSize());
-        } else if (trafficIncrementTimes.get(trafficIncrementTimes.size() - 1) == message.getOffset()) {
-            // Increment last element in stepwise list
-            int trafficSoFar = trafficAtTime.get(trafficAtTime.size() - 1);
-            trafficAtTime.set(trafficAtTime.size() - 1, trafficSoFar + message.getSize());
-        } else {
-            // Add a new point to stepwise list
-            int trafficSoFar = trafficAtTime.get(trafficAtTime.size() - 1);
-            trafficIncrementTimes.add(message.getOffset());
-            trafficAtTime.add(trafficSoFar + message.getSize());
-        }
+        maxPrefix.setValueAt(message.getOffset(), maxPrefix.getValue(message.getOffset()) + message.getSize());
     }
 
     public long getPeriod() {
@@ -134,19 +119,8 @@ public class Block {
             return traffic + totalTraffic;
         }
 
-        int idx = Collections.binarySearch(trafficIncrementTimes, time);
-        if (idx > 0) {
-            // Traffic increases at this time step
-            // Since our interval is right-open (-> interval length 0 always empty), we use the traffic value from before
-            return trafficAtTime.get(idx - 1);
-        } else if (idx < -1) {
-            // Traffic increased before this time step
-            // actualIdx = -(idx + 1) = -idx - 1, so the increase happened at -idx - 2
-            return trafficAtTime.get(-idx - 2);
-        }
-
-        // Interval ends before first message
-        return 0;
+        // interval of length `time` is [0, time-1]
+        return maxPrefix.getValue(time - 1);
     }
 
     /**
@@ -161,6 +135,8 @@ public class Block {
      * @return an upper bound on the traffic generated in an interval of length <code>time</code> beginning at <code>fromMessage</code>
      */
     public int maxTraffic(int fromMessage, long time) {
+        // Calculate traffic in [a, b)
+        // as traffic [0, b) - traffic [0, a)
         long offset = messages.get(fromMessage).getOffset();
         long extInterval = offset + time;
         int trafficInExtInterval = maxPrefix(extInterval);
@@ -176,6 +152,9 @@ public class Block {
      * in this block
      */
     public int maxTraffic(long time) {
+        List<Long> trafficIncrementTimes = maxPrefix.getIncrementTimeSteps();
+        List<Integer> trafficAtTime = maxPrefix.getIncrementValues();
+
         int max = 0;
         for (int i = 0; i < trafficIncrementTimes.size(); i++) {
             long offset = trafficIncrementTimes.get(i);

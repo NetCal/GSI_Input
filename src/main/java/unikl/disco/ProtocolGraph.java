@@ -40,4 +40,17 @@ public class ProtocolGraph {
                 .max()
                 .orElse(0); // Max returns none if there are no blocks, therefore no traffic
     }
+
+    public PseudoPeriodicFunction approximateSubadditive(long k) {
+        PseudoPeriodicFunction result = new PseudoPeriodicFunction(0, k, maxTraffic(k));
+        for (long i = 0; i < k; i++) {
+            if (i % (k/100) == 0) {
+                System.out.printf("%.3d%", 100*i/k);
+            }
+
+            result.setValueAt(i, maxTraffic(i));
+        }
+
+        return result;
+    }
 }
