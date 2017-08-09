@@ -25,6 +25,7 @@ public class PseudoPeriodicFunctionTest extends TestCase {
         func.setValueAt(32, 6);
         func.setValueAt(64, 7);
         func.setValueAt(102, 8);
+        func.setValueAt(104, 8);
     }
 
     public void testGetValue() throws Exception {
@@ -49,22 +50,22 @@ public class PseudoPeriodicFunctionTest extends TestCase {
     public void testIncrementValueAtPeriodBorder() throws Exception {
         func.setValueAt(105, 9);
 
-        assertEquals("Time before function returns 0", 0, func.getValue(-1));
-        assertEquals("Exact match returns exact value", 0, func.getValue(0));
-        assertEquals("Exact match returns exact value", 1, func.getValue(1));
-        assertEquals("Exact match returns exact value", 7, func.getValue(64));
-        assertEquals("Exact match returns exact value", 8, func.getValue(102));
-        assertEquals("Inexact match returns previous value", 2, func.getValue(3));
-        assertEquals("Inexact match returns previous value", 4, func.getValue(12));
-        assertEquals("Inexact match returns previous value", 7, func.getValue(99));
-        assertEquals("Inexact match returns previous value", 8, func.getValue(103));
-        assertEquals("Increment used correctly", 9, func.getValue(105));
-        assertEquals("Increment used correctly", 11, func.getValue(110));
-        assertEquals("Increment used correctly", 13, func.getValue(115));
-        assertEquals("Function interpolated correctly", 9, func.getValue(106));
-        assertEquals("Function interpolated correctly", 10, func.getValue(107));
-        assertEquals("Function interpolated correctly", 11, func.getValue(111));
-        assertEquals("Function interpolated correctly", 12, func.getValue(112));
+        assertEquals("Time before function does not return 0", 0, func.getValue(-1));
+        assertEquals("Exact match does not return exact value", 0, func.getValue(0));
+        assertEquals("Exact match does not return exact value", 1, func.getValue(1));
+        assertEquals("Exact match does not return exact value", 7, func.getValue(64));
+        assertEquals("Exact match does not return exact value", 8, func.getValue(102));
+        assertEquals("Inexact match does not return previous value", 2, func.getValue(3));
+        assertEquals("Inexact match does not return previous value", 4, func.getValue(12));
+        assertEquals("Inexact match does not return previous value", 7, func.getValue(99));
+        assertEquals("Inexact match does not return previous value", 8, func.getValue(103));
+        assertEquals("Increment used incorrectly", 9, func.getValue(105));
+        assertEquals("Increment used incorrectly", 11, func.getValue(110));
+        assertEquals("Increment used incorrectly", 13, func.getValue(115));
+        assertEquals("Function interpolated incorrectly", 9, func.getValue(106));
+        assertEquals("Function interpolated incorrectly", 10, func.getValue(107));
+        assertEquals("Function interpolated incorrectly", 11, func.getValue(111));
+        assertEquals("Function interpolated incorrectly", 12, func.getValue(112));
     }
 
     public void testConcaveHull() {
@@ -73,13 +74,21 @@ public class PseudoPeriodicFunctionTest extends TestCase {
         for (int i = 2; i < curve.getSegmentCount(); i++) {
             LinearSegment segment = curve.getSegment(i);
             LinearSegment previous = curve.getSegment(i-1);
-
-            assertTrue("Decreasing gradient in linear segments", segment.getGrad().leq(previous.getGrad()));
+            assertTrue("Increasing gradient in linear segments", segment.getGrad().leq(previous.getGrad()));
         }
 
-        assertEquals(2, curve.getSegmentCount());
+        assertEquals(4, curve.getSegmentCount());
+
         assertEquals(NumFactory.createZero(), curve.getSegment(1).getX());
-        assertEquals(NumFactory.create(1, 1), curve.getSegment(1).getY());
-        assertEquals(NumFactory.create(1, 1), curve.getSegment(1).getGrad());
+        assertEquals(NumFactory.create(1), curve.getSegment(1).getY());
+        assertEquals(NumFactory.create(1), curve.getSegment(1).getGrad());
+
+        assertEquals(NumFactory.create(1), curve.getSegment(2).getX());
+        assertEquals(NumFactory.create(2), curve.getSegment(2).getY());
+        assertEquals(NumFactory.create(0.5), curve.getSegment(2).getGrad());
+
+        assertEquals(NumFactory.create(3), curve.getSegment(3).getX());
+        assertEquals(NumFactory.create(3), curve.getSegment(3).getY());
+        assertEquals(NumFactory.create(0.4), curve.getSegment(3).getGrad());
     }
 }

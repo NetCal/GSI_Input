@@ -66,7 +66,7 @@ public class ProtocolGraph {
         PseudoPeriodicFunction result = new PseudoPeriodicFunction(0, k, maxTraffic(k));
         for (long i = 0; i < k; i++) {
             if (i % (k/100) == 0) {
-                System.out.printf("%.3d%", 100*i/k);
+                System.out.printf("%3.2f%%", (100.0*i)/k);
             }
 
             result.setValueAt(i, maxTraffic(i));

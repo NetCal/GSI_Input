@@ -4,9 +4,8 @@ import unikl.disco.curves.ArrivalCurve;
 import unikl.disco.curves.Curve;
 import unikl.disco.curves.LinearSegment;
 import unikl.disco.numbers.Num;
-import unikl.disco.numbers.implementations.RationalBigInt;
+import unikl.disco.numbers.NumFactory;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class PseudoPeriodicFunction {
         // f(x) - x*(increment/length)
         // This guarantees that the last segment will always be above the curve
         int lastSegmentStartIdx = 0;
-        Num maxVerticalOffset = rational(0, 1);
+        Num maxVerticalOffset = NumFactory.createZero();
 
         List<Long> incrementTimeSteps = initialPart.getIncrementTimeSteps();
         List<Integer> incrementValues = initialPart.getIncrementValues();
@@ -80,24 +79,29 @@ public class PseudoPeriodicFunction {
             System.out.println("Unable to find a concave hull, using a very rough approximation");
             Curve curve = new ArrivalCurve();
             curve.addSegment(LinearSegment.createZeroSegment());
-            curve.addSegment(new LinearSegment(RationalBigInt.createZero(), maxVerticalOffset, lastSegmentGrad, true));
+            curve.addSegment(new LinearSegment(NumFactory.createZero(), maxVerticalOffset, lastSegmentGrad, true));
             return new ArrivalCurve(curve);
         }
 
         Curve curve = new ArrivalCurve();
-        curve.addSegment(LinearSegment.createZeroSegment());
         for (int i = 0; i < segmentPoints.size(); i++) {
             int fromIdx = segmentPoints.get(i);
             int toIdx = i == segmentPoints.size() - 1 ? lastSegmentStartIdx : segmentPoints.get(i+1);
 
+            if (incrementTimeSteps.get(toIdx) == 1) {
+                continue; // This segment would be mushed into a zero-length segment
+            }
+
             Num slope = slope(fromIdx, toIdx);
-            Num time = rational(incrementTimeSteps.get(fromIdx) - 1, 1);
-            Num value = rational(incrementValues.get(fromIdx), 1);
+
+            long startTime = incrementTimeSteps.get(fromIdx);
+            Num time = integral(startTime == 0 ? 0 : startTime - 1);
+            Num value = integral(incrementValues.get(fromIdx));
             curve.addSegment(new LinearSegment(time, value, slope, true));
         }
 
-        Num lastSegmentTime = rational(incrementTimeSteps.get(lastSegmentStartIdx) - 1, 1);
-        Num lastSegmentValue = rational(incrementValues.get(lastSegmentStartIdx), 1);
+        Num lastSegmentTime = integral(incrementTimeSteps.get(lastSegmentStartIdx) - 1);
+        Num lastSegmentValue = integral(incrementValues.get(lastSegmentStartIdx));
         curve.addSegment(new LinearSegment(lastSegmentTime, lastSegmentValue, lastSegmentGrad, true));
 
         return new ArrivalCurve(curve);
@@ -108,8 +112,7 @@ public class PseudoPeriodicFunction {
      * @param toIdx Part of the function up to which the hull should be calculated
      * @param minSlope Minimum slope that may be taken. Concavity constraints mean that each segment must have
      *                 monotonically increasing slopes
-     * @return A list of indices into <code>timeSteps</code> which are the start points of each segment. Idx 0 is only
-     *         include if the time at idx 0 is not zero
+     * @return A list of indices into <code>timeSteps</code> which are the start points of each segment.
      */
     private List<Integer> getConcaveHullSegmentPoints(int toIdx, Num minSlope) {
 
@@ -118,10 +121,6 @@ public class PseudoPeriodicFunction {
             if (incrementTimeSteps.isEmpty() || incrementTimeSteps.get(toIdx) == 0) {
                 return new ArrayList<>();
             }
-
-            ArrayList<Integer> result = new ArrayList<>();
-            result.add(0);
-            return result;
         }
 
         int segmentStart = toIdx -1;
@@ -154,8 +153,12 @@ public class PseudoPeriodicFunction {
         return null; // No concave hull found
     }
 
+    private Num integral(long value) {
+        return NumFactory.create((double) value);
+    }
+
     private Num rational(long num, long den) {
-        return new RationalBigInt(BigInteger.valueOf(num), BigInteger.valueOf(den));
+        return NumFactory.create(num / (double) den);
     }
 
     private Num slope(int first, int second) {
