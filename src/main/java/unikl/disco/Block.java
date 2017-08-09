@@ -29,7 +29,8 @@ public class Block {
         this.messages.add(message);
         this.totalTraffic += message.getSize();
 
-        maxPrefix.setValueAt(message.getOffset(), maxPrefix.getValue(message.getOffset()) + message.getSize());
+        // Message at offset n is only counted in interval of length n+1
+        maxPrefix.setValueAt(message.getOffset() + 1, maxPrefix.getValue(maxPrefix.getValidUpTo()) + message.getSize());
     }
 
     public long getPeriod() {
@@ -59,6 +60,31 @@ public class Block {
 
     public Set<Block> getPreviousBlocks() {
         return Collections.unmodifiableSet(previousBlocks);
+    }
+
+    public void precalculateMaxPrefix(long time) {
+        if (time > maxPrefix.getValidUpTo() + 1) {
+            System.out.printf("[%10s] Warning: maxPrefix precalculation skipped some values (calculating these first) [%d -> %d]%n",
+                    label, maxPrefix.getValidUpTo() + 1,  time);
+        }
+
+        for (long i = maxPrefix.getValidUpTo() + 1; i <= time; i++) {
+            if (i <= period) {
+                maxPrefix.setValueAt(i, totalTraffic);
+                continue;
+            }
+
+            int traffic = 0;
+            // Traverse graph forwards
+            for (Block block : nextBlocks) {
+                int nextBlockMaxTraffic = block.maxPrefix(i - period);
+                if (nextBlockMaxTraffic > traffic) {
+                    traffic = nextBlockMaxTraffic;
+                }
+            }
+
+            maxPrefix.setValueAt(i, traffic + totalTraffic);
+        }
     }
 
     /**
@@ -106,21 +132,9 @@ public class Block {
             return totalTraffic;
         }
 
-        if (time > period) {
-            int traffic = 0;
-            // Traverse graph forwards
-            for (Block block : nextBlocks) {
-                int nextBlockMaxTraffic = block.maxPrefix(time - period);
-                if (nextBlockMaxTraffic > traffic) {
-                    traffic = nextBlockMaxTraffic;
-                }
-            }
+        precalculateMaxPrefix(time);
 
-            return traffic + totalTraffic;
-        }
-
-        // interval of length `time` is [0, time-1]
-        return maxPrefix.getValue(time - 1);
+        return maxPrefix.getValue(time);
     }
 
     /**
@@ -139,6 +153,7 @@ public class Block {
         // as traffic [0, b) - traffic [0, a)
         long offset = messages.get(fromMessage).getOffset();
         long extInterval = offset + time;
+
         int trafficInExtInterval = maxPrefix(extInterval);
         int trafficInPrefix = maxPrefix(offset);
 
@@ -152,22 +167,8 @@ public class Block {
      * in this block
      */
     public int maxTraffic(long time) {
-        List<Long> trafficIncrementTimes = maxPrefix.getIncrementTimeSteps();
-        List<Integer> trafficAtTime = maxPrefix.getIncrementValues();
-
-        int max = 0;
-        for (int i = 0; i < trafficIncrementTimes.size(); i++) {
-            long offset = trafficIncrementTimes.get(i);
-            int trafficSoFar = 0;
-            if (i > 0) trafficSoFar = trafficAtTime.get(i - 1);
-
-            int trafficGenerated = maxPrefix(offset + time)- trafficSoFar;
-            if (trafficGenerated > max) {
-                max = trafficGenerated;
-            }
-        }
-
-        return max;
+        this.precalculateMaxPrefix(period + time);
+        return maxPrefix.maximumInterval(time, period);
     }
 
     public int totalTrafficInBlock() {
