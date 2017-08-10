@@ -62,28 +62,49 @@ public class Block {
         return Collections.unmodifiableSet(previousBlocks);
     }
 
+    public long getNextMaxPrefixIncrementTime() {
+        int currentMaxPrefix = maxPrefix.maximumValue();
+        int remaining = currentMaxPrefix - totalTraffic;
+
+        long earliestIncrement = Long.MAX_VALUE;
+        for (Block block: nextBlocks) {
+            long increment = block.getEarliestTimeExceeding(remaining);
+            if (increment < earliestIncrement) {
+                earliestIncrement = increment;
+            }
+        }
+
+        return earliestIncrement + period;
+    }
+
+    public long getEarliestTimeExceeding(int value) {
+        while (value >= maxPrefix.maximumValue()) {
+            precalculateMaxPrefix(getNextMaxPrefixIncrementTime());
+        }
+        return maxPrefix.firstTimeExceeding(value);
+    }
+
     public void precalculateMaxPrefix(long time) {
         if (time > maxPrefix.getValidUpTo() + 1) {
             System.out.printf("[%10s] Warning: maxPrefix precalculation skipped some values (calculating these first) [%d -> %d]%n",
                     label, maxPrefix.getValidUpTo() + 1,  time);
         }
 
-        for (long i = maxPrefix.getValidUpTo() + 1; i <= time; i++) {
-            if (i <= period) {
-                maxPrefix.setValueAt(i, totalTraffic);
-                continue;
-            }
+        while (maxPrefix.getValidUpTo() < time) {
+            long nextIncrement = getNextMaxPrefixIncrementTime();
+            if (nextIncrement <= period) throw new IllegalStateException("Next increment shouldn't lie after validTo and before end of block");
 
             int traffic = 0;
             // Traverse graph forwards
+            long remaining = nextIncrement - period;
             for (Block block : nextBlocks) {
-                int nextBlockMaxTraffic = block.maxPrefix(i - period);
+                int nextBlockMaxTraffic = block.maxPrefix(remaining);
                 if (nextBlockMaxTraffic > traffic) {
                     traffic = nextBlockMaxTraffic;
                 }
             }
 
-            maxPrefix.setValueAt(i, traffic + totalTraffic);
+            maxPrefix.setValueAt(nextIncrement, traffic + totalTraffic);
         }
     }
 

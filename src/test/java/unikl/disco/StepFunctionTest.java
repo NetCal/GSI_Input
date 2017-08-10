@@ -62,4 +62,42 @@ public class StepFunctionTest extends TestCase {
         assertEquals(4, func.maximumInterval(8, 32));
     }
 
+    public void testMaxValue() {
+        assertEquals(7, func.maximumValue());
+    }
+
+    public void testLastStepTime() {
+        assertEquals(64, func.lastStepTime());
+    }
+
+    public void testFirstStepAfter() {
+        assertEquals(0, func.nextIncrementTimeAfter(-1));
+        assertEquals(1, func.nextIncrementTimeAfter(0));
+        assertEquals(2, func.nextIncrementTimeAfter(1));
+        assertEquals(4, func.nextIncrementTimeAfter(2));
+        assertEquals(4, func.nextIncrementTimeAfter(3));
+        assertEquals(8, func.nextIncrementTimeAfter(4));
+
+        try {
+            func.nextIncrementTimeAfter(64);
+            fail();
+        } catch (IllegalArgumentException ex) {
+            // pass
+        }
+    }
+
+    public void testFirstStepExceeding() {
+        assertEquals(0, func.firstTimeExceeding(-1));
+        assertEquals(1, func.firstTimeExceeding(0));
+        assertEquals(2, func.firstTimeExceeding(1));
+        assertEquals(4, func.firstTimeExceeding(2));
+        assertEquals(8, func.firstTimeExceeding(3));
+
+        try {
+            func.firstTimeExceeding(7);
+            fail();
+        } catch (IllegalArgumentException ex) {
+            // pass
+        }
+    }
 }

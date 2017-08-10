@@ -24,6 +24,10 @@ public class StepFunction {
             throw new IllegalArgumentException("Tried to go back in time");
         }
 
+        if (value < maximumValue()) {
+            throw new IllegalArgumentException("Step function must be monotonic");
+        }
+
         int lastIdx = incrementTimeSteps.size() - 1;
         if (time == incrementTimeSteps.get(lastIdx)) {
             incrementValues.set(lastIdx, value);
@@ -90,5 +94,63 @@ public class StepFunction {
         }
 
         return max;
+    }
+
+    /**
+     * Retrieve the time of the last value change in the function
+     */
+    public long lastStepTime() {
+        if (incrementTimeSteps.isEmpty()) {
+            throw new IllegalStateException("No step in function");
+        }
+        return incrementTimeSteps.get(incrementTimeSteps.size() - 1);
+    }
+
+    /**
+     * Retrieve the maximum value of the function
+     */
+    public int maximumValue() {
+        if (incrementValues.isEmpty()) {
+            throw new IllegalStateException("No step in function");
+        }
+        return incrementValues.get(incrementValues.size() - 1);
+    }
+
+    /**
+     * Find the first time step at which the function increments <emph>after</emph> <code>time</code>
+     * @param time Time threshold
+     */
+    public long nextIncrementTimeAfter(long time) {
+        if (time >= lastStepTime()) {
+            throw new IllegalArgumentException("No increment time after " + time + " (last step at " + lastStepTime() + ")");
+        }
+
+        int idx = Collections.binarySearch(incrementTimeSteps, time);
+        if (idx >= 0) {
+            // We want the next step /after/ the specified time
+            // So if the specified time is exactly at a step, we pick the next one
+            return incrementTimeSteps.get(idx + 1);
+        } else {
+            idx = -(idx + 1);
+            return incrementTimeSteps.get(idx);
+        }
+    }
+
+    /**
+     * Find the first time step at which the function (strictly) exceeds <code>value</code>
+     * @param value Value threshold
+     */
+    public long firstTimeExceeding(int value) {
+        if (value >= maximumValue()) {
+            throw new IllegalArgumentException("No value above " + value + " (fn max value: " + maximumValue() + ")");
+        }
+
+        int idx = Collections.binarySearch(incrementValues, value);
+        if (idx >= 0) {
+            return incrementTimeSteps.get(idx + 1);
+        } else {
+            idx = -(idx + 1);
+            return incrementTimeSteps.get(idx);
+        }
     }
 }

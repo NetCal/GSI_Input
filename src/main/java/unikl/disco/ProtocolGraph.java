@@ -48,28 +48,25 @@ public class ProtocolGraph {
                 .orElse(0); // If no blocks, 0 length of longest block
     }
 
+    private long firstTimeExceeding(int value) {
+        return blocks.values().stream()
+                .mapToLong(b -> b.getEarliestTimeExceeding(value))
+                .min()
+                .getAsLong();
+    }
+
     public PseudoPeriodicFunction approximateSubadditive(long k) {
-        long precompLimit = k + longestBlockLength();
-        long milestonePeriod = precompLimit / 10000;
-
-        for (long i = 0; i < precompLimit; i++) {
-            if (i % milestonePeriod == 0) {
-                System.out.printf("Precalculating values %3.2f%% (%d/%d)%n",
-                        i / milestonePeriod / 100.0, i, precompLimit);
-            }
-            for (Block block: blocks.values()) {
-                block.precalculateMaxPrefix(i);
-            }
-        }
-        System.out.printf("\rPrecalculating values 100.00%% (%d/%d)%n", precompLimit, precompLimit);
-
         PseudoPeriodicFunction result = new PseudoPeriodicFunction(0, k, maxTraffic(k));
-        for (long i = 0; i < k; i++) {
-            if (i % (k/100) == 0) {
-                System.out.printf("%3.2f%%", (100.0*i)/k);
-            }
+        if (maxTraffic(0) != 0) {
+            throw new IllegalStateException("Interval 0 should always return maxtraffic 0");
+        }
 
-            result.setValueAt(i, maxTraffic(i));
+        result.setValueAt(0, 0);
+        long nextStep = firstTimeExceeding(0);
+        while (nextStep <= k) {
+            int nextValue = maxTraffic(nextStep);
+            result.setValueAt(nextStep, nextValue);
+            nextStep = firstTimeExceeding(nextValue);
         }
 
         return result;
