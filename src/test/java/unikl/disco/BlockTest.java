@@ -62,4 +62,10 @@ public class BlockTest extends TestCase {
         assertEquals(184, block.maxTraffic(100000000));
     }
 
+    public void testEarliestTimeMaxTrafficExceeds() throws Exception {
+        assertEquals(1, block.getShortestIntervalWhereMaxTrafficExceeds(3));
+        assertEquals(253394, block.getShortestIntervalWhereMaxTrafficExceeds(4));
+        assertEquals(503394, block.getShortestIntervalWhereMaxTrafficExceeds(6));
+    }
+
 }

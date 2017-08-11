@@ -50,7 +50,7 @@ public class ProtocolGraph {
 
     private long firstTimeExceeding(int value) {
         return blocks.values().stream()
-                .mapToLong(b -> b.getEarliestTimeExceeding(value))
+                .mapToLong(b -> b.getShortestIntervalWhereMaxTrafficExceeds(value))
                 .min()
                 .getAsLong();
     }
@@ -68,6 +68,8 @@ public class ProtocolGraph {
             result.setValueAt(nextStep, nextValue);
             nextStep = firstTimeExceeding(nextValue);
         }
+
+        result.setValueAt(k, maxTraffic(k));
 
         return result;
     }

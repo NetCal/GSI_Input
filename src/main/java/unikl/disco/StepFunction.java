@@ -77,6 +77,13 @@ public class StepFunction {
         return Collections.unmodifiableList(incrementTimeSteps);
     }
 
+    /**
+     * Retrieve the maximum traffic generated in any interval of length `time` where the start time does not exceed
+     * `latestOffset`
+     * @param time
+     * @param latestOffset
+     * @return
+     */
     public int maximumInterval(long time, long latestOffset) {
         if (time < 0) throw new IllegalArgumentException("Negative interval");
 

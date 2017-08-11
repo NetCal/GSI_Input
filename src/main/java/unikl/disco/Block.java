@@ -68,7 +68,7 @@ public class Block {
 
         long earliestIncrement = Long.MAX_VALUE;
         for (Block block: nextBlocks) {
-            long increment = block.getEarliestTimeExceeding(remaining);
+            long increment = block.getEarliestTimeMaxPrefixExceeds(remaining);
             if (increment < earliestIncrement) {
                 earliestIncrement = increment;
             }
@@ -77,19 +77,29 @@ public class Block {
         return earliestIncrement + period;
     }
 
-    public long getEarliestTimeExceeding(int value) {
+    public long getEarliestTimeMaxPrefixExceeds(int value) {
         while (value >= maxPrefix.maximumValue()) {
             precalculateMaxPrefix(getNextMaxPrefixIncrementTime());
         }
         return maxPrefix.firstTimeExceeding(value);
     }
 
-    public void precalculateMaxPrefix(long time) {
-        if (time > maxPrefix.getValidUpTo() + 1) {
-            System.out.printf("[%10s] Warning: maxPrefix precalculation skipped some values (calculating these first) [%d -> %d]%n",
-                    label, maxPrefix.getValidUpTo() + 1,  time);
+    public long getShortestIntervalWhereMaxTrafficExceeds(int value) {
+        long shortestInterval = Long.MAX_VALUE;
+        for (Message message: messages) {
+            int trafficBefore = message.getOffset() == 0 ? 0 : maxPrefix(message.getOffset() - 1);
+            int trafficToReach = value + trafficBefore;
+            long intervalToReach = getEarliestTimeMaxPrefixExceeds(trafficToReach);
+            long actualInterval = intervalToReach - message.getOffset();
+            if (actualInterval < shortestInterval) {
+                shortestInterval = actualInterval;
+            }
         }
 
+        return shortestInterval;
+    }
+
+    public void precalculateMaxPrefix(long time) {
         while (maxPrefix.getValidUpTo() < time) {
             long nextIncrement = getNextMaxPrefixIncrementTime();
             if (nextIncrement <= period) throw new IllegalStateException("Next increment shouldn't lie after validTo and before end of block");

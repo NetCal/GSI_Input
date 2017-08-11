@@ -16,12 +16,12 @@ public class PseudoPeriodicFunction {
 
     private StepFunction initialPart = new StepFunction();
     // Readonly view to initalPart internal repr.
-    private List<Long> incrementTimeSteps = initialPart.getIncrementTimeSteps();
-    private List<Integer> incrementValues = initialPart.getIncrementValues();
+    public final List<Long> incrementTimeSteps = initialPart.getIncrementTimeSteps();
+    public final List<Integer> incrementValues = initialPart.getIncrementValues();
 
-    private final long periodBegin;
-    private final long periodLength;
-    private final int periodIncrement;
+    public final long periodBegin;
+    public final long periodLength;
+    public final int periodIncrement;
 
     public PseudoPeriodicFunction(long periodBegin, long periodLength, int periodIncrement) {
         this.periodBegin = periodBegin;
