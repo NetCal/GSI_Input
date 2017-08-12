@@ -143,7 +143,8 @@ public class PseudoPeriodicFunction {
 
             // function intercepted or no concave hull found
             // try to flatten our concave hull a bit
-            toIdx -= 1;
+            segmentStart -= 1;
+            if (segmentStart < 0) return null;
             if (currentSlope.leq(maxSlope)) {
                 maxSlope = currentSlope;
             }

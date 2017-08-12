@@ -51,12 +51,12 @@ public class ProtocolGraphTest extends TestCase {
                 assertSegmentAboveCurve(f, curve, f.periodLength + time + 1);
 
                 // In a couple of approximated period
-                assertTrue(f.getValue(10 * f.periodLength + time - 1) >= graph.maxTraffic(10 * f.periodLength + time - 1));
-                assertSegmentAboveCurve(f, curve, 10 * f.periodLength + time - 1);
-                assertTrue(f.getValue(10 * f.periodLength + time) >= graph.maxTraffic(10 * f.periodLength + time));
-                assertSegmentAboveCurve(f, curve, 10 * f.periodLength + time);
-                assertTrue(f.getValue(10 * f.periodLength + time + 1) >= graph.maxTraffic(10 * f.periodLength + time + 1));
-                assertSegmentAboveCurve(f, curve, 10 * f.periodLength + time + 1);
+                assertTrue(f.getValue(4 * f.periodLength + time - 1) >= graph.maxTraffic(4 * f.periodLength + time - 1));
+                assertSegmentAboveCurve(f, curve, 4 * f.periodLength + time - 1);
+                assertTrue(f.getValue(4 * f.periodLength + time) >= graph.maxTraffic(4 * f.periodLength + time));
+                assertSegmentAboveCurve(f, curve, 4 * f.periodLength + time);
+                assertTrue(f.getValue(4 * f.periodLength + time + 1) >= graph.maxTraffic(4 * f.periodLength + time + 1));
+                assertSegmentAboveCurve(f, curve, 4 * f.periodLength + time + 1);
             }
 
         }
