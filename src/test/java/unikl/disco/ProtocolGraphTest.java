@@ -107,17 +107,12 @@ public class ProtocolGraphTest extends TestCase {
         FullyConnectedProtocolGraph fcGraph2 = graph.fullyConnected(2);
         FullyConnectedProtocolGraph fcGraph4 = graph.fullyConnected(4);
 
-        PseudoPeriodicFunction curveStandard = graph.approximateSubadditive(20_000_000_000L);
-        PseudoPeriodicFunction curveFc1 = fcGraph1.approximateSubadditive(20_000_000_000L);
-        PseudoPeriodicFunction curveFc2 = fcGraph2.approximateSubadditive(20_000_000_000L);
-        PseudoPeriodicFunction curveFc4 = fcGraph4.approximateSubadditive(20_000_000_000L);
-
         long time = 0;
         int value = 0;
         while (time <= 40_000_000_000L) {
-            assertTrue(curveStandard.getValue(time) <= curveFc4.getValue(time));
-            assertTrue(curveFc4.getValue(time) <= curveFc2.getValue(time));
-            assertTrue(curveFc2.getValue(time) <= curveFc1.getValue(time));
+            assertTrue(graph.maxTraffic(time) <= fcGraph4.maxTraffic(time));
+            assertTrue(fcGraph4.maxTraffic(time) <= fcGraph2.maxTraffic(time));
+            assertTrue(fcGraph2.maxTraffic(time) <= fcGraph1.maxTraffic(time));
 
             time = graph.firstTimeExceeding(value);
             value = graph.maxTraffic(time);
