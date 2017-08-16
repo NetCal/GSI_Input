@@ -66,8 +66,8 @@ public class Utils {
             xs.append(", ");
             ys.append(", ");
             if (i != curve.getSegmentCount() - 1) {
-                xs.append(curve.getSegment(i+1).getX().doubleValue());
-                ys.append(curve.getSegment(i).f(curve.getSegment(i+1).getX()).doubleValue());
+                xs.append(curve.getSegment(i + 1).getX().doubleValue());
+                ys.append(curve.getSegment(i).f(curve.getSegment(i + 1).getX()).doubleValue());
             } else {
                 xs.append(finalSegmentEnd);
                 ys.append(curve.getSegment(i).f(NumFactory.create(finalSegmentEnd)).doubleValue());

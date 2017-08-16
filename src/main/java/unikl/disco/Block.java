@@ -68,7 +68,7 @@ public class Block implements Iterable<Message> {
         int remaining = currentMaxPrefix - totalTraffic;
 
         long earliestIncrement = Long.MAX_VALUE;
-        for (Block block: nextBlocks) {
+        for (Block block : nextBlocks) {
             long increment = block.getEarliestTimeMaxPrefixExceeds(remaining);
             if (increment < earliestIncrement) {
                 earliestIncrement = increment;
@@ -87,7 +87,7 @@ public class Block implements Iterable<Message> {
 
     public long getShortestIntervalWhereMaxTrafficExceeds(int value) {
         long shortestInterval = Long.MAX_VALUE;
-        for (Message message: messages) {
+        for (Message message : messages) {
             int trafficBefore = message.getOffset() == 0 ? 0 : maxPrefix(message.getOffset() - 1);
             int trafficToReach = value + trafficBefore;
             long intervalToReach = getEarliestTimeMaxPrefixExceeds(trafficToReach);
@@ -103,7 +103,8 @@ public class Block implements Iterable<Message> {
     public void precalculateMaxPrefix(long time) {
         while (maxPrefix.getValidUpTo() < time) {
             long nextIncrement = getNextMaxPrefixIncrementTime();
-            if (nextIncrement <= period) throw new IllegalStateException("Next increment shouldn't lie after validTo and before end of block");
+            if (nextIncrement <= period)
+                throw new IllegalStateException("Next increment shouldn't lie after validTo and before end of block");
 
             int traffic = 0;
             // Traverse graph forwards
@@ -122,6 +123,7 @@ public class Block implements Iterable<Message> {
     /**
      * Calculates the max traffic generated in an interval of length <code>time</code> that ends on the end of this block.
      * If the interval is longer than block itself, the interval is extended to blocks feeding into this block
+     *
      * @param time the length of the interval
      * @return an upper bound on the traffic generated in a suffix of this block
      */
@@ -153,6 +155,7 @@ public class Block implements Iterable<Message> {
     /**
      * Calculates the max traffic generated in an interval of length <code>time</code> that begins with the start of this block.
      * If the interval is longer than block itself, the interval is extended to blocks following this block
+     *
      * @param time the length of the interval
      * @return an upper bound on the traffic generated in a prefix of this block
      */
@@ -176,8 +179,9 @@ public class Block implements Iterable<Message> {
      * in the interval calculations.
      * If the interval is longer than the remaining length of block, the interval is extended to all blocks following
      * this block.
+     *
      * @param fromMessage the index of the message from which the interval should start
-     * @param time the length of the interval
+     * @param time        the length of the interval
      * @return an upper bound on the traffic generated in an interval of length <code>time</code> beginning at <code>fromMessage</code>
      */
     public int maxTraffic(int fromMessage, long time) {
@@ -194,6 +198,7 @@ public class Block implements Iterable<Message> {
 
     /**
      * Calculate the max traffic generated in any interval of length <code>time</code> that begins inside this block.
+     *
      * @param time The length of the interval
      * @return an upper bound on the traffic generated in an interval of length <code>time</code> beginning somewhere
      * in this block

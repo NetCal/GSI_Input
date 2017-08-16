@@ -14,14 +14,13 @@ import java.util.List;
  */
 public class PseudoPeriodicFunction {
 
+    public final long periodBegin;
+    public final long periodLength;
+    public final int periodIncrement;
     private StepFunction initialPart = new StepFunction();
     // Readonly view to initalPart internal repr.
     public final List<Long> incrementTimeSteps = initialPart.getIncrementTimeSteps();
     public final List<Integer> incrementValues = initialPart.getIncrementValues();
-
-    public final long periodBegin;
-    public final long periodLength;
-    public final int periodIncrement;
 
     public PseudoPeriodicFunction(long periodBegin, long periodLength, int periodIncrement) {
         this.periodBegin = periodBegin;
@@ -86,7 +85,7 @@ public class PseudoPeriodicFunction {
         Curve curve = new ArrivalCurve();
         for (int i = 0; i < segmentPoints.size(); i++) {
             int fromIdx = segmentPoints.get(i);
-            int toIdx = i == segmentPoints.size() - 1 ? lastSegmentStartIdx : segmentPoints.get(i+1);
+            int toIdx = i == segmentPoints.size() - 1 ? lastSegmentStartIdx : segmentPoints.get(i + 1);
 
             if (incrementTimeSteps.get(toIdx) == 1) {
                 continue; // This segment would be mushed into a zero-length segment
@@ -109,7 +108,8 @@ public class PseudoPeriodicFunction {
 
     /**
      * Calculate the concave hull of the function from 0 to <code>time[toIdx]</code>.
-     * @param toIdx Part of the function up to which the hull should be calculated
+     *
+     * @param toIdx    Part of the function up to which the hull should be calculated
      * @param minSlope Minimum slope that may be taken. Concavity constraints mean that each segment must have
      *                 monotonically increasing slopes
      * @return A list of indices into <code>timeSteps</code> which are the start points of each segment.
@@ -123,7 +123,7 @@ public class PseudoPeriodicFunction {
             }
         }
 
-        int segmentStart = toIdx -1;
+        int segmentStart = toIdx - 1;
         Num currentSlope = slope(segmentStart, toIdx);
         Num maxSlope = currentSlope; // Can't grow in slope without intercepting actual function
 

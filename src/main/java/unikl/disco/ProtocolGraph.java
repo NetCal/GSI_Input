@@ -42,11 +42,18 @@ public class ProtocolGraph {
                 .orElse(0); // Max returns none if there are no blocks, therefore no traffic
     }
 
-    private long longestBlockLength() {
+    long longestBlockLength() {
         return blocks.values().stream()
                 .mapToLong(Block::getPeriod)
                 .max()
                 .orElse(0); // If no blocks, 0 length of longest block
+    }
+
+    long shortestBlockLength() {
+        return blocks.values().stream()
+                .mapToLong(Block::getPeriod)
+                .min()
+                .orElse(0);
     }
 
     public long firstTimeExceeding(int value) {
@@ -80,8 +87,8 @@ public class ProtocolGraph {
                 .map(this::blocksToSuperBlock)
                 .collect(Collectors.toSet());
 
-        for (Block a: superBlocks) {
-            for (Block b: superBlocks) {
+        for (Block a : superBlocks) {
+            for (Block b : superBlocks) {
                 a.addNext(b);
             }
         }
@@ -94,7 +101,7 @@ public class ProtocolGraph {
 
     public Set<List<Block>> getSuccessiveBlocks(int n) {
         Set<List<Block>> result = new HashSet<>();
-        for (Block block: blocks.values()) {
+        for (Block block : blocks.values()) {
             result.addAll(getSuccessiveBlocks(block, n));
         }
 

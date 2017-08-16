@@ -46,6 +46,7 @@ public class StepFunction {
 
     /**
      * The maximum point for which this function was defined
+     *
      * @return
      */
     public long getValidUpTo() {
@@ -53,7 +54,8 @@ public class StepFunction {
     }
 
     public int getValue(long time) {
-        if (time > validUpTo) throw new IllegalArgumentException("Function not defined to " + time + " (valid up to " + validUpTo + ")");
+        if (time > validUpTo)
+            throw new IllegalArgumentException("Function not defined to " + time + " (valid up to " + validUpTo + ")");
 
         int idx = Collections.binarySearch(incrementTimeSteps, time);
         if (idx >= 0) {
@@ -80,6 +82,7 @@ public class StepFunction {
     /**
      * Retrieve the maximum traffic generated in any interval of length `time` where the start time does not exceed
      * `latestOffset`
+     *
      * @param time
      * @param latestOffset
      * @return
@@ -125,6 +128,7 @@ public class StepFunction {
 
     /**
      * Find the first time step at which the function increments <emph>after</emph> <code>time</code>
+     *
      * @param time Time threshold
      */
     public long nextIncrementTimeAfter(long time) {
@@ -145,6 +149,7 @@ public class StepFunction {
 
     /**
      * Find the first time step at which the function (strictly) exceeds <code>value</code>
+     *
      * @param value Value threshold
      */
     public long firstTimeExceeding(int value) {
