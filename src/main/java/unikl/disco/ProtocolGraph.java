@@ -1,8 +1,8 @@
 package unikl.disco;
 
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Malte Schütze
@@ -31,6 +31,7 @@ public class ProtocolGraph {
 
     /**
      * Calculate the maximum traffic generated over all possible intervals of length <code>intervalLength</code>
+     *
      * @param intervalLength The length of the interval to check
      * @return The maximum traffic generated
      */
@@ -48,7 +49,7 @@ public class ProtocolGraph {
                 .orElse(0); // If no blocks, 0 length of longest block
     }
 
-    private long firstTimeExceeding(int value) {
+    public long firstTimeExceeding(int value) {
         return blocks.values().stream()
                 .mapToLong(b -> b.getShortestIntervalWhereMaxTrafficExceeds(value))
                 .min()
@@ -72,5 +73,68 @@ public class ProtocolGraph {
         result.setValueAt(k, maxTraffic(k));
 
         return result;
+    }
+
+    public FullyConnectedProtocolGraph fullyConnected(int numSuccessiveBlocks) {
+        Set<Block> superBlocks = getSuccessiveBlocks(numSuccessiveBlocks).stream()
+                .map(this::blocksToSuperBlock)
+                .collect(Collectors.toSet());
+
+        for (Block a: superBlocks) {
+            for (Block b: superBlocks) {
+                a.addNext(b);
+            }
+        }
+
+        FullyConnectedProtocolGraph result = new FullyConnectedProtocolGraph();
+        superBlocks.forEach(result::addBlock);
+
+        return result;
+    }
+
+    public Set<List<Block>> getSuccessiveBlocks(int n) {
+        Set<List<Block>> result = new HashSet<>();
+        for (Block block: blocks.values()) {
+            result.addAll(getSuccessiveBlocks(block, n));
+        }
+
+        return result;
+    }
+
+    public Set<List<Block>> getSuccessiveBlocks(Block block, int n) {
+        Set<List<Block>> result = new HashSet<>();
+        if (n == 1 || block.getNextBlocks().isEmpty()) {
+            List<Block> list = new ArrayList<>();
+            list.add(block);
+            result.add(list);
+            return result;
+        }
+
+        for (Block next : block.getNextBlocks()) {
+            for (List<Block> successors : getSuccessiveBlocks(next, n - 1)) {
+                successors.add(0, block);
+                result.add(successors);
+            }
+        }
+
+        return result;
+    }
+
+    public Block blocksToSuperBlock(List<Block> blocks) {
+        long duration = blocks.stream().mapToLong(Block::getPeriod).sum();
+        String label = blocks.stream().map(Block::getLabel).collect(Collectors.joining("--"));
+        Block superBlock = new Block(label, duration);
+
+        long globalOffset = 0;
+        for (Block block : blocks) {
+            for (Message msg : block) {
+                Message cloned = new Message(msg.getLabel(), superBlock, globalOffset + msg.getOffset(), msg.getSize());
+                superBlock.addMessage(cloned);
+            }
+
+            globalOffset += block.getPeriod();
+        }
+
+        return superBlock;
     }
 }

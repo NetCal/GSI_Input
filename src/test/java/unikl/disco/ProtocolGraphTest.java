@@ -5,7 +5,11 @@ import unikl.disco.curves.ArrivalCurve;
 import unikl.disco.numbers.Num;
 import unikl.disco.numbers.NumFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Malte Schütze
@@ -28,7 +32,7 @@ public class ProtocolGraphTest extends TestCase {
     }
 
     public void testApproximateSubadditiveIsAboveActualArrivalCurve() throws Exception {
-        for (long interval: Arrays.asList(1_000L, 1_000_000L, 1_000_000_000L, 10_000_000_000L, 1_000_000_000_000L)) {
+        for (long interval: Arrays.asList(1_000L, 1_000_000L, 1_000_000_000L, 10_000_000_000L)) {
             System.out.println("Testing interval " + interval);
             PseudoPeriodicFunction f = graph.approximateSubadditive(interval);
             ArrivalCurve curve = f.concaveHull();
@@ -51,12 +55,12 @@ public class ProtocolGraphTest extends TestCase {
                 assertSegmentAboveCurve(f, curve, f.periodLength + time + 1);
 
                 // In a couple of approximated period
-                assertTrue(f.getValue(4 * f.periodLength + time - 1) >= graph.maxTraffic(4 * f.periodLength + time - 1));
-                assertSegmentAboveCurve(f, curve, 4 * f.periodLength + time - 1);
-                assertTrue(f.getValue(4 * f.periodLength + time) >= graph.maxTraffic(4 * f.periodLength + time));
-                assertSegmentAboveCurve(f, curve, 4 * f.periodLength + time);
-                assertTrue(f.getValue(4 * f.periodLength + time + 1) >= graph.maxTraffic(4 * f.periodLength + time + 1));
-                assertSegmentAboveCurve(f, curve, 4 * f.periodLength + time + 1);
+                assertTrue(f.getValue(40 * f.periodLength + time - 1) >= graph.maxTraffic(40 * f.periodLength + time - 1));
+                assertSegmentAboveCurve(f, curve, 40 * f.periodLength + time - 1);
+                assertTrue(f.getValue(40 * f.periodLength + time) >= graph.maxTraffic(40 * f.periodLength + time));
+                assertSegmentAboveCurve(f, curve, 40 * f.periodLength + time);
+                assertTrue(f.getValue(40 * f.periodLength + time + 1) >= graph.maxTraffic(40 * f.periodLength + time + 1));
+                assertSegmentAboveCurve(f, curve, 40 * f.periodLength + time + 1);
             }
 
         }
@@ -66,5 +70,65 @@ public class ProtocolGraphTest extends TestCase {
         Num x = NumFactory.create(time);
         int segmentId = curve.getSegmentDefining(x);
         assertTrue(curve.getSegment(segmentId).f(x).geq(NumFactory.create(f.getValue(time))));
+    }
+
+    public void testBlocksToSuperBlock() {
+        List<Block> blocks = new ArrayList<>();
+        blocks.add(graph.getBlock("B_CRY_0"));
+        blocks.add(graph.getBlock("B_CRY_0"));
+        blocks.add(graph.getBlock("B_CRY_HALT"));
+
+        Block superBlock = graph.blocksToSuperBlock(blocks);
+        assertEquals("B_CRY_0--B_CRY_0--B_CRY_HALT", superBlock.getLabel());
+        assertEquals(5500500000L, superBlock.getPeriod());
+        assertEquals(21, superBlock.maxPrefix(2750000000L));
+        assertEquals(42, superBlock.maxPrefix(5500000000L));
+        assertEquals(43, superBlock.maxPrefix(5500500000L));
+    }
+
+    public void testGetSuccessiveBlocksOfSpecificBlock() {
+        Block block = graph.getBlock("B_CRY_0");
+        Set<List<Block>> result = graph.getSuccessiveBlocks(block, 3);
+        Set<String> asString = result.stream().map(l -> l.stream().map(Block::getLabel).collect(Collectors.joining(" -> "))).collect(Collectors.toSet());
+
+        assertTrue(asString.contains("B_CRY_0 -> B_CRY_0 -> B_CRY_0"));
+        assertTrue(asString.contains("B_CRY_0 -> B_CRY_0 -> B_CRY_1"));
+        assertTrue(asString.contains("B_CRY_0 -> B_CRY_0 -> B_CRY_HALT"));
+        assertTrue(asString.contains("B_CRY_0 -> B_CRY_1 -> B_CRY_0"));
+        assertTrue(asString.contains("B_CRY_0 -> B_CRY_1 -> B_CRY_1"));
+        assertTrue(asString.contains("B_CRY_0 -> B_CRY_1 -> B_CRY_HALT"));
+        assertTrue(asString.contains("B_CRY_0 -> B_CRY_HALT -> B_CRY_HALT"));
+        assertTrue(asString.contains("B_CRY_0 -> B_CRY_HALT -> B_CRY_INIT"));
+        assertEquals(8, asString.size());
+    }
+
+    public void testGetFullyConnected() {
+        FullyConnectedProtocolGraph fcGraph1 = graph.fullyConnected(1);
+        FullyConnectedProtocolGraph fcGraph2 = graph.fullyConnected(2);
+        FullyConnectedProtocolGraph fcGraph4 = graph.fullyConnected(4);
+
+        PseudoPeriodicFunction curveStandard = graph.approximateSubadditive(20_000_000_000L);
+        PseudoPeriodicFunction curveFc1 = fcGraph1.approximateSubadditive(20_000_000_000L);
+        PseudoPeriodicFunction curveFc2 = fcGraph2.approximateSubadditive(20_000_000_000L);
+        PseudoPeriodicFunction curveFc4 = fcGraph4.approximateSubadditive(20_000_000_000L);
+
+        long time = 0;
+        int value = 0;
+        while (time <= 40_000_000_000L) {
+            assertTrue(curveStandard.getValue(time) <= curveFc4.getValue(time));
+            assertTrue(curveFc4.getValue(time) <= curveFc2.getValue(time));
+            assertTrue(curveFc2.getValue(time) <= curveFc1.getValue(time));
+
+            time = graph.firstTimeExceeding(value);
+            value = graph.maxTraffic(time);
+        }
+    }
+
+    public void testDumpGraph() {
+        PseudoPeriodicFunction f = graph.approximateSubadditive(10_000_000_000L);
+        ArrivalCurve curve = f.concaveHull();
+        Utils.dumpMaxTrafficMatplotlib(graph, 20_000_000_000L);
+        Utils.dumpPseudoperiodicFunctionMatplotlib(f, 20_000_000_000L);
+        Utils.dumpArrivalCurveMatplotlib(curve, 20_000_000_000L);
     }
 }

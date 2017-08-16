@@ -1,11 +1,12 @@
 package unikl.disco;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author Malte Schütze
  */
-public class Block {
+public class Block implements Iterable<Message> {
     private String label;
     private long period;
     private int totalTraffic;
@@ -204,5 +205,20 @@ public class Block {
 
     public int totalTrafficInBlock() {
         return totalTraffic;
+    }
+
+    @Override
+    public Iterator<Message> iterator() {
+        return messages.iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Message> action) {
+        messages.forEach(action);
+    }
+
+    @Override
+    public Spliterator<Message> spliterator() {
+        return messages.spliterator();
     }
 }
