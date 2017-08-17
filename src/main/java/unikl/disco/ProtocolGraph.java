@@ -56,11 +56,39 @@ public class ProtocolGraph {
                 .orElse(0);
     }
 
+    int highestBlockTraffic() {
+        return blocks.values().stream()
+                .mapToInt(Block::totalTrafficInBlock)
+                .max()
+                .orElse(0);
+    }
+
+    double highestAverageBlockTraffic() {
+        return blocks.values().stream()
+                .mapToDouble(b -> b.totalTrafficInBlock() / (double) b.getPeriod())
+                .max()
+                .orElse(0);
+    }
+
     public long firstTimeExceeding(int value) {
         return blocks.values().stream()
                 .mapToLong(b -> b.getShortestIntervalWhereMaxTrafficExceeds(value))
                 .min()
                 .getAsLong();
+    }
+
+    public int maxPrefix(long time) {
+        return blocks.values().stream()
+                .mapToInt(b -> b.maxPrefix(time))
+                .max()
+                .orElse(0);
+    }
+
+    public int maxSuffix(long time) {
+        return blocks.values().stream()
+                .mapToInt(b -> b.maxSuffix(time))
+                .max()
+                .orElse(0);
     }
 
     public PseudoPeriodicFunction approximateSubadditive(long k) {
