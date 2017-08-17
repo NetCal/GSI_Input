@@ -7,24 +7,37 @@ import junit.framework.TestCase;
  */
 public class FullyConnectedProtocolGraphTest extends TestCase {
 
-    private FullyConnectedProtocolGraph graph;
+    private FullyConnectedProtocolGraph fcGraph;
+    private ProtocolGraph graph;
 
     public void setUp() throws Exception {
         super.setUp();
-        graph = new DotGraphParser(DotGraphParser.class.getResourceAsStream("/cryring_fictional.dot")).parse().fullyConnected(1);
+        graph = new DotGraphParser(DotGraphParser.class.getResourceAsStream("/cryring_fictional.dot")).parse();
+        fcGraph = graph.fullyConnected(1);
     }
 
     public void testRescale() throws Exception {
-        FullyConnectedRescaledProtocolGraph rescaledGraph = graph.rescale();
+        FullyConnectedRescaledProtocolGraph rescaledGraph = fcGraph.rescale();
 
         long time = 0;
-        int value = 0;
+        double value = 0;
         while (time <= 40_000_000_000L) {
-            assertTrue(graph.maxTraffic(time) <= rescaledGraph.maxTraffic(time));
+            assertTrue(fcGraph.maxTraffic(time) <= rescaledGraph.maxTraffic(time));
 
+            time = fcGraph.firstTimeExceeding(value);
+            value = fcGraph.maxTraffic(time);
+        }
+    }
+
+    public void testApproximateMostEfficientLoop() {
+        PseudoPeriodicFunction f = fcGraph.approximateMostEfficientLoop();
+        f.concaveHull();
+        long time = 0;
+        double value = 0;
+        while (time <= 40_000_000_000L) {
+            assertTrue(f.getValue(time) >= value);
             time = graph.firstTimeExceeding(value);
             value = graph.maxTraffic(time);
         }
     }
-
 }

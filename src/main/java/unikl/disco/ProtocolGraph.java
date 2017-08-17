@@ -84,6 +84,13 @@ public class ProtocolGraph {
                 .getAsLong();
     }
 
+    public long firstTimeExceedingInSuffix(double value) {
+        return blocks.values().stream()
+                .mapToLong(b -> b.getEarliestTimeMaxSuffixExceeds(value))
+                .min()
+                .getAsLong();
+    }
+
     public double maxPrefix(long time) {
         return blocks.values().stream()
                 .mapToDouble(b -> b.maxPrefix(time))

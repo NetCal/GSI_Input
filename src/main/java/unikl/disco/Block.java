@@ -16,6 +16,7 @@ public class Block implements Iterable<Message> {
 
     // For the step function of the flow in this block, note the times where the function "steps", and to what traffc it steps
     private StepFunction maxPrefix = new StepFunction();
+    private StepFunction maxSuffix = new StepFunction();
 
     public Block(String label, long period) {
         this.label = label;
@@ -32,6 +33,17 @@ public class Block implements Iterable<Message> {
 
         // Message at offset n is only counted in interval of length n+1
         maxPrefix.setValueAt(message.getOffset() + 1, maxPrefix.getValue(maxPrefix.getValidUpTo()) + message.getSize());
+        rebuildMaxSuffix();
+    }
+
+    private void rebuildMaxSuffix() {
+        StepFunction f = new StepFunction();
+        for (int i = messages.size() - 1; i >= 0; i--) {
+            Message msg = messages.get(i);
+            f.setValueAt(period - msg.getOffset(), f.getValue(f.getValidUpTo()) + msg.getSize());
+        }
+
+        maxSuffix = f;
     }
 
     public long getPeriod() {
@@ -78,11 +90,31 @@ public class Block implements Iterable<Message> {
         return earliestIncrement + period;
     }
 
+    public long getNextMaxSuffixIncrementTime() {
+        double currentMaxSuffix = maxSuffix.maximumValue();
+        double remaining = currentMaxSuffix - totalTraffic;
+
+        long earliestIncrement = Long.MAX_VALUE;
+        for (Block block : previousBlocks) {
+            long increment = block.getEarliestTimeMaxSuffixExceeds(remaining);
+            earliestIncrement = Math.min(increment, earliestIncrement);
+        }
+
+        return earliestIncrement + period;
+    }
+
     public long getEarliestTimeMaxPrefixExceeds(double value) {
         while (value >= maxPrefix.maximumValue()) {
             precalculateMaxPrefix(getNextMaxPrefixIncrementTime());
         }
         return maxPrefix.firstTimeExceeding(value);
+    }
+
+    public long getEarliestTimeMaxSuffixExceeds(double value) {
+        while (value >= maxSuffix.maximumValue()) {
+            precalculateMaxSuffix(getNextMaxSuffixIncrementTime());
+        }
+        return maxSuffix.firstTimeExceeding(value);
     }
 
     public long getShortestIntervalWhereMaxTrafficExceeds(double value) {
@@ -120,6 +152,24 @@ public class Block implements Iterable<Message> {
         }
     }
 
+    public void precalculateMaxSuffix(long time) {
+        while (maxSuffix.getValidUpTo() < time) {
+            long nextIncrement = getNextMaxSuffixIncrementTime();
+            if (nextIncrement <= period)
+                throw new IllegalStateException("Next increment in illegal range");
+
+            double traffic = 0;
+            // Traverse graph backwards
+            long remaining = nextIncrement - period;
+            for (Block block : previousBlocks) {
+                double nextBlockMaxTraffic = block.maxSuffix(remaining);
+                traffic = Math.max(traffic, nextBlockMaxTraffic);
+            }
+
+            maxSuffix.setValueAt(nextIncrement, traffic + totalTraffic);
+        }
+    }
+
     /**
      * Calculates the max traffic generated in an interval of length <code>time</code> that ends on the end of this block.
      * If the interval is longer than block itself, the interval is extended to blocks feeding into this block
@@ -135,21 +185,8 @@ public class Block implements Iterable<Message> {
             return totalTraffic;
         }
 
-        if (time > period) {
-            double traffic = 0;
-            // Traverse graph backwards
-            for (Block block : previousBlocks) {
-                double previousBlockMaxTraffic = block.maxSuffix(time - period);
-                if (previousBlockMaxTraffic > traffic) {
-                    traffic = previousBlockMaxTraffic;
-                }
-            }
-
-            return traffic + totalTraffic;
-        }
-
-        // traffic produced in suffix of length k is equal to total traffic minus traffic produced in prefix of length n - k
-        return totalTraffic - maxPrefix(period - time);
+        precalculateMaxSuffix(time);
+        return maxSuffix.getValue(time);
     }
 
     /**

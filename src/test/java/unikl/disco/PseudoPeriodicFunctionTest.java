@@ -73,7 +73,7 @@ public class PseudoPeriodicFunctionTest extends TestCase {
 
         for (int i = 2; i < curve.getSegmentCount(); i++) {
             LinearSegment segment = curve.getSegment(i);
-            LinearSegment previous = curve.getSegment(i-1);
+            LinearSegment previous = curve.getSegment(i - 1);
             assertTrue("Increasing gradient in linear segments", segment.getGrad().leq(previous.getGrad()));
         }
 

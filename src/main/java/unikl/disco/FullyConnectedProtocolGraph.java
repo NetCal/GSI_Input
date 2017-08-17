@@ -36,4 +36,46 @@ public class FullyConnectedProtocolGraph extends ProtocolGraph {
 
         return result;
     }
+
+    public PseudoPeriodicFunction approximateMostEfficientLoop() {
+        double highestAverageTraffic = highestAverageBlockTraffic();
+        PseudoPeriodicFunction function = new PseudoPeriodicFunction(2 * longestBlockLength(), 1, highestAverageTraffic);
+
+        long time = 0;
+        double value = 0;
+        while (time < 2 * longestBlockLength()) {
+            function.setValueAt(time, value);
+            time = firstTimeExceeding(value);
+            value = maxTraffic(time);
+        }
+
+        function.setValueAt(2 * longestBlockLength(), splitTrafficBetweenPrefixAndSuffix());
+        return function;
+    }
+
+    public double splitTrafficBetweenPrefixAndSuffix() {
+        long timeInSuffix = 0;
+        double maxTraffic = 0;
+        while (timeInSuffix < longestBlockLength()) {
+            double trafficInSuffix = maxSuffix(timeInSuffix);
+            maxTraffic = Math.max(maxTraffic, trafficInSuffix + splitTrafficBetweenLoopAndPrefix(2 * longestBlockLength() - timeInSuffix));
+            timeInSuffix = firstTimeExceedingInSuffix(trafficInSuffix);
+        }
+
+        return maxTraffic;
+    }
+
+    private double splitTrafficBetweenLoopAndPrefix(long time) {
+        double highestAverageTraffic = highestAverageBlockTraffic();
+
+        long timeInPrefix = 0;
+        double maxTraffic = 0;
+        while (timeInPrefix < time) {
+            double trafficInPrefix = maxPrefix(timeInPrefix);
+            maxTraffic = Math.max(maxTraffic, (time - timeInPrefix) * highestAverageTraffic + trafficInPrefix);
+            timeInPrefix = firstTimeExceedingInPrefix(trafficInPrefix);
+        }
+
+        return maxTraffic;
+    }
 }

@@ -32,7 +32,7 @@ public class ProtocolGraphTest extends TestCase {
     }
 
     public void testApproximateSubadditiveIsAboveActualArrivalCurve() throws Exception {
-        for (long interval: Arrays.asList(1_000L, 1_000_000L, 1_000_000_000L, 10_000_000_000L)) {
+        for (long interval : Arrays.asList(1_000L, 1_000_000L, 1_000_000_000L, 10_000_000_000L)) {
             System.out.println("Testing interval " + interval);
             PseudoPeriodicFunction f = graph.approximateSubadditive(interval);
             ArrivalCurve curve = f.concaveHull();
@@ -108,7 +108,7 @@ public class ProtocolGraphTest extends TestCase {
         FullyConnectedProtocolGraph fcGraph4 = graph.fullyConnected(4);
 
         long time = 0;
-        int value = 0;
+        double value = 0;
         while (time <= 40_000_000_000L) {
             assertTrue(graph.maxTraffic(time) <= fcGraph4.maxTraffic(time));
             assertTrue(fcGraph4.maxTraffic(time) <= fcGraph2.maxTraffic(time));

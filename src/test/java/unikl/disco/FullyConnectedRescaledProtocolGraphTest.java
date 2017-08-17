@@ -20,7 +20,7 @@ public class FullyConnectedRescaledProtocolGraphTest extends TestCase {
         PseudoPeriodicFunction f = rescaledGraph.approximateTightestLoop();
         f.concaveHull();
         long time = 0;
-        int value = 0;
+        double value = 0;
         while (time <= 40_000_000_000L) {
             assertTrue(f.getValue(time) >= value);
             time = graph.firstTimeExceeding(value);
