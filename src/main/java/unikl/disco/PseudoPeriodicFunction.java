@@ -20,7 +20,7 @@ public class PseudoPeriodicFunction {
     private StepFunction initialPart = new StepFunction();
     // Readonly view to initalPart internal repr.
     public final List<Long> incrementTimeSteps = initialPart.getIncrementTimeSteps();
-    public final List<Integer> incrementValues = initialPart.getIncrementValues();
+    public final List<Double> incrementValues = initialPart.getIncrementValues();
 
     public PseudoPeriodicFunction(long periodBegin, long periodLength, double periodIncrement) {
         this.periodBegin = periodBegin;
@@ -28,7 +28,7 @@ public class PseudoPeriodicFunction {
         this.periodIncrement = periodIncrement;
     }
 
-    public void setValueAt(long time, int value) {
+    public void setValueAt(long time, double value) {
         initialPart.setValueAt(time, value);
     }
 
@@ -55,9 +55,6 @@ public class PseudoPeriodicFunction {
         // This guarantees that the last segment will always be above the curve
         int lastSegmentStartIdx = 0;
         Num maxVerticalOffset = NumFactory.createZero();
-
-        List<Long> incrementTimeSteps = initialPart.getIncrementTimeSteps();
-        List<Integer> incrementValues = initialPart.getIncrementValues();
 
         // Note that we only need to check the increment points, every other point will be closer to the long-term line
         for (int i = 0; i < incrementTimeSteps.size(); i++) {
@@ -94,13 +91,13 @@ public class PseudoPeriodicFunction {
             Num slope = slope(fromIdx, toIdx);
 
             long startTime = incrementTimeSteps.get(fromIdx);
-            Num time = integral(startTime == 0 ? 0 : startTime - 1);
-            Num value = integral(incrementValues.get(fromIdx));
+            Num time = NumFactory.create(startTime == 0 ? 0 : startTime - 1);
+            Num value = NumFactory.create(incrementValues.get(fromIdx));
             curve.addSegment(new LinearSegment(time, value, slope, true));
         }
 
-        Num lastSegmentTime = integral(incrementTimeSteps.get(lastSegmentStartIdx) - 1);
-        Num lastSegmentValue = integral(incrementValues.get(lastSegmentStartIdx));
+        Num lastSegmentTime = NumFactory.create(incrementTimeSteps.get(lastSegmentStartIdx) - 1);
+        Num lastSegmentValue = NumFactory.create(incrementValues.get(lastSegmentStartIdx));
         curve.addSegment(new LinearSegment(lastSegmentTime, lastSegmentValue, lastSegmentGrad, true));
 
         return new ArrivalCurve(curve);
@@ -154,17 +151,13 @@ public class PseudoPeriodicFunction {
         return null; // No concave hull found
     }
 
-    private Num integral(long value) {
-        return NumFactory.create((double) value);
-    }
-
     private Num rational(double num, long den) {
         return NumFactory.create(num / den);
     }
 
     private Num slope(int first, int second) {
         long time = incrementTimeSteps.get(second) - incrementTimeSteps.get(first);
-        long value = incrementValues.get(second) - incrementValues.get(first);
+        double value = incrementValues.get(second) - incrementValues.get(first);
 
         return rational(value, time);
     }

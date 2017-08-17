@@ -9,10 +9,10 @@ import java.util.List;
  */
 public class StepFunction {
     private List<Long> incrementTimeSteps = new ArrayList<>();
-    private List<Integer> incrementValues = new ArrayList<>();
+    private List<Double> incrementValues = new ArrayList<>();
     private long validUpTo = 0;
 
-    public void setValueAt(long time, int value) {
+    public void setValueAt(long time, double value) {
         if (incrementTimeSteps.isEmpty()) {
             incrementTimeSteps.add(time);
             incrementValues.add(value);
@@ -53,7 +53,7 @@ public class StepFunction {
         return validUpTo;
     }
 
-    public int getValue(long time) {
+    public double getValue(long time) {
         if (time > validUpTo)
             throw new IllegalArgumentException("Function not defined to " + time + " (valid up to " + validUpTo + ")");
 
@@ -71,7 +71,7 @@ public class StepFunction {
 
     }
 
-    public List<Integer> getIncrementValues() {
+    public List<Double> getIncrementValues() {
         return Collections.unmodifiableList(incrementValues);
     }
 
@@ -87,15 +87,15 @@ public class StepFunction {
      * @param latestOffset
      * @return
      */
-    public int maximumInterval(long time, long latestOffset) {
+    public double maximumInterval(long time, long latestOffset) {
         if (time < 0) throw new IllegalArgumentException("Negative interval");
 
-        int max = 0;
+        double max = 0;
         int idx = 0;
         while (idx < incrementTimeSteps.size() && incrementTimeSteps.get(idx) <= latestOffset) {
-            int trafficInPrefix = idx == 0 ? 0 : incrementValues.get(idx - 1);
+            double trafficInPrefix = idx == 0 ? 0 : incrementValues.get(idx - 1);
             long totalTime = incrementTimeSteps.get(idx) + time - 1;
-            int intervalTraffic = getValue(totalTime) - trafficInPrefix;
+            double intervalTraffic = getValue(totalTime) - trafficInPrefix;
             if (intervalTraffic > max) {
                 max = intervalTraffic;
             }
@@ -119,7 +119,7 @@ public class StepFunction {
     /**
      * Retrieve the maximum value of the function
      */
-    public int maximumValue() {
+    public double maximumValue() {
         if (incrementValues.isEmpty()) {
             throw new IllegalStateException("No step in function");
         }
@@ -152,7 +152,7 @@ public class StepFunction {
      *
      * @param value Value threshold
      */
-    public long firstTimeExceeding(int value) {
+    public long firstTimeExceeding(double value) {
         if (value >= maximumValue()) {
             throw new IllegalArgumentException("No value above " + value + " (fn max value: " + maximumValue() + ")");
         }

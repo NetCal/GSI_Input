@@ -35,9 +35,9 @@ public class ProtocolGraph {
      * @param intervalLength The length of the interval to check
      * @return The maximum traffic generated
      */
-    public int maxTraffic(long intervalLength) {
+    public double maxTraffic(long intervalLength) {
         return blocks.values().stream()
-                .mapToInt(b -> b.maxTraffic(intervalLength))
+                .mapToDouble(b -> b.maxTraffic(intervalLength))
                 .max()
                 .orElse(0); // Max returns none if there are no blocks, therefore no traffic
     }
@@ -70,23 +70,30 @@ public class ProtocolGraph {
                 .orElse(0);
     }
 
-    public long firstTimeExceeding(int value) {
+    public long firstTimeExceeding(double value) {
         return blocks.values().stream()
                 .mapToLong(b -> b.getShortestIntervalWhereMaxTrafficExceeds(value))
                 .min()
                 .getAsLong();
     }
 
-    public int maxPrefix(long time) {
+    public long firstTimeExceedingInPrefix(double value) {
         return blocks.values().stream()
-                .mapToInt(b -> b.maxPrefix(time))
+                .mapToLong(b -> b.getEarliestTimeMaxPrefixExceeds(value))
+                .min()
+                .getAsLong();
+    }
+
+    public double maxPrefix(long time) {
+        return blocks.values().stream()
+                .mapToDouble(b -> b.maxPrefix(time))
                 .max()
                 .orElse(0);
     }
 
-    public int maxSuffix(long time) {
+    public double maxSuffix(long time) {
         return blocks.values().stream()
-                .mapToInt(b -> b.maxSuffix(time))
+                .mapToDouble(b -> b.maxSuffix(time))
                 .max()
                 .orElse(0);
     }
@@ -100,7 +107,7 @@ public class ProtocolGraph {
         result.setValueAt(0, 0);
         long nextStep = firstTimeExceeding(0);
         while (nextStep <= k) {
-            int nextValue = maxTraffic(nextStep);
+            double nextValue = maxTraffic(nextStep);
             result.setValueAt(nextStep, nextValue);
             nextStep = firstTimeExceeding(nextValue);
         }

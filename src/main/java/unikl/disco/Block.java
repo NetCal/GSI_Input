@@ -64,8 +64,8 @@ public class Block implements Iterable<Message> {
     }
 
     public long getNextMaxPrefixIncrementTime() {
-        int currentMaxPrefix = maxPrefix.maximumValue();
-        int remaining = currentMaxPrefix - totalTraffic;
+        double currentMaxPrefix = maxPrefix.maximumValue();
+        double remaining = currentMaxPrefix - totalTraffic;
 
         long earliestIncrement = Long.MAX_VALUE;
         for (Block block : nextBlocks) {
@@ -78,18 +78,18 @@ public class Block implements Iterable<Message> {
         return earliestIncrement + period;
     }
 
-    public long getEarliestTimeMaxPrefixExceeds(int value) {
+    public long getEarliestTimeMaxPrefixExceeds(double value) {
         while (value >= maxPrefix.maximumValue()) {
             precalculateMaxPrefix(getNextMaxPrefixIncrementTime());
         }
         return maxPrefix.firstTimeExceeding(value);
     }
 
-    public long getShortestIntervalWhereMaxTrafficExceeds(int value) {
+    public long getShortestIntervalWhereMaxTrafficExceeds(double value) {
         long shortestInterval = Long.MAX_VALUE;
         for (Message message : messages) {
-            int trafficBefore = message.getOffset() == 0 ? 0 : maxPrefix(message.getOffset() - 1);
-            int trafficToReach = value + trafficBefore;
+            double trafficBefore = message.getOffset() == 0 ? 0 : maxPrefix(message.getOffset() - 1);
+            double trafficToReach = value + trafficBefore;
             long intervalToReach = getEarliestTimeMaxPrefixExceeds(trafficToReach);
             long actualInterval = intervalToReach - message.getOffset();
             if (actualInterval < shortestInterval) {
@@ -106,11 +106,11 @@ public class Block implements Iterable<Message> {
             if (nextIncrement <= period)
                 throw new IllegalStateException("Next increment shouldn't lie after validTo and before end of block");
 
-            int traffic = 0;
+            double traffic = 0;
             // Traverse graph forwards
             long remaining = nextIncrement - period;
             for (Block block : nextBlocks) {
-                int nextBlockMaxTraffic = block.maxPrefix(remaining);
+                double nextBlockMaxTraffic = block.maxPrefix(remaining);
                 if (nextBlockMaxTraffic > traffic) {
                     traffic = nextBlockMaxTraffic;
                 }
@@ -127,7 +127,7 @@ public class Block implements Iterable<Message> {
      * @param time the length of the interval
      * @return an upper bound on the traffic generated in a suffix of this block
      */
-    public int maxSuffix(long time) {
+    public double maxSuffix(long time) {
         if (time == 0) {
             return 0;
         }
@@ -136,10 +136,10 @@ public class Block implements Iterable<Message> {
         }
 
         if (time > period) {
-            int traffic = 0;
+            double traffic = 0;
             // Traverse graph backwards
             for (Block block : previousBlocks) {
-                int previousBlockMaxTraffic = block.maxSuffix(time - period);
+                double previousBlockMaxTraffic = block.maxSuffix(time - period);
                 if (previousBlockMaxTraffic > traffic) {
                     traffic = previousBlockMaxTraffic;
                 }
@@ -159,7 +159,7 @@ public class Block implements Iterable<Message> {
      * @param time the length of the interval
      * @return an upper bound on the traffic generated in a prefix of this block
      */
-    public int maxPrefix(long time) {
+    public double maxPrefix(long time) {
         if (time == 0) {
             return 0;
         }
@@ -184,14 +184,14 @@ public class Block implements Iterable<Message> {
      * @param time        the length of the interval
      * @return an upper bound on the traffic generated in an interval of length <code>time</code> beginning at <code>fromMessage</code>
      */
-    public int maxTraffic(int fromMessage, long time) {
+    public double maxTraffic(int fromMessage, long time) {
         // Calculate traffic in [a, b)
         // as traffic [0, b) - traffic [0, a)
         long offset = messages.get(fromMessage).getOffset();
         long extInterval = offset + time;
 
-        int trafficInExtInterval = maxPrefix(extInterval);
-        int trafficInPrefix = maxPrefix(offset);
+        double trafficInExtInterval = maxPrefix(extInterval);
+        double trafficInPrefix = maxPrefix(offset);
 
         return trafficInExtInterval - trafficInPrefix;
     }
@@ -203,7 +203,7 @@ public class Block implements Iterable<Message> {
      * @return an upper bound on the traffic generated in an interval of length <code>time</code> beginning somewhere
      * in this block
      */
-    public int maxTraffic(long time) {
+    public double maxTraffic(long time) {
         this.precalculateMaxPrefix(period + time);
         return maxPrefix.maximumInterval(time, period);
     }

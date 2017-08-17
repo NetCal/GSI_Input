@@ -10,7 +10,7 @@ public class FullyConnectedRescaledProtocolGraph extends ProtocolGraph {
         PseudoPeriodicFunction function = new PseudoPeriodicFunction(2 * shortestBlockLen, shortestBlockLen, highestBlockTraffic());
 
         long time = 0;
-        int value = 0;
+        double value = 0;
         while (time < 2 * shortestBlockLen) {
             function.setValueAt(time, value);
             time = firstTimeExceeding(value);
@@ -25,13 +25,13 @@ public class FullyConnectedRescaledProtocolGraph extends ProtocolGraph {
         return function;
     }
 
-    private int divideTrafficBetweenPrefixAndSuffix(long time) {
+    private double divideTrafficBetweenPrefixAndSuffix(long time) {
         long inPrefix = 0;
-        int inPrefixTraffic = 0;
-        int maxTraffic = 0;
+        double inPrefixTraffic = 0;
+        double maxTraffic = 0;
         while (inPrefix < time) {
             maxTraffic = Math.max(maxTraffic, maxSuffix(time - inPrefix) + inPrefixTraffic);
-            inPrefix = firstTimeExceeding(inPrefixTraffic);
+            inPrefix = firstTimeExceedingInPrefix(inPrefixTraffic);
             inPrefixTraffic = maxPrefix(time);
         }
 
