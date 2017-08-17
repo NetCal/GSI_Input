@@ -16,13 +16,13 @@ public class PseudoPeriodicFunction {
 
     public final long periodBegin;
     public final long periodLength;
-    public final int periodIncrement;
+    public final double periodIncrement;
     private StepFunction initialPart = new StepFunction();
     // Readonly view to initalPart internal repr.
     public final List<Long> incrementTimeSteps = initialPart.getIncrementTimeSteps();
     public final List<Integer> incrementValues = initialPart.getIncrementValues();
 
-    public PseudoPeriodicFunction(long periodBegin, long periodLength, int periodIncrement) {
+    public PseudoPeriodicFunction(long periodBegin, long periodLength, double periodIncrement) {
         this.periodBegin = periodBegin;
         this.periodLength = periodLength;
         this.periodIncrement = periodIncrement;
@@ -32,7 +32,7 @@ public class PseudoPeriodicFunction {
         initialPart.setValueAt(time, value);
     }
 
-    public long getValue(long time) {
+    public double getValue(long time) {
         if (time < periodBegin + periodLength) {
             return initialPart.getValue(time);
         }
@@ -158,8 +158,8 @@ public class PseudoPeriodicFunction {
         return NumFactory.create((double) value);
     }
 
-    private Num rational(long num, long den) {
-        return NumFactory.create(num / (double) den);
+    private Num rational(double num, long den) {
+        return NumFactory.create(num / den);
     }
 
     private Num slope(int first, int second) {
