@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 /**
  * @author Malte Schütze
  */
-public class Utils {
-    public static void dumpPseudoperiodicFunctionMatplotlib(PseudoPeriodicFunction f, long finalTime) {
+public class MatplotlibOutputFormatter implements OutputFormatter {
+    public void printPseudoperiodicFunction(PseudoPeriodicFunction f, long finalTime) {
         String xs = f.incrementTimeSteps.stream().map(Object::toString).collect(Collectors.joining(", "));
         String ys = f.incrementValues.stream().map(Object::toString).collect(Collectors.joining(", "));
         int timeIdx = Collections.binarySearch(f.incrementTimeSteps, f.periodBegin);
@@ -41,15 +41,17 @@ public class Utils {
         }
 
         System.out.println("# Pseudo-periodic function up to " + finalTime);
+        System.out.println("plt.axvline(" + f.periodBegin + ")");
+        System.out.println("plt.axvline(" + (f.periodBegin + f.periodLength) + ")");
+        System.out.println("plt.axhline(" + f.getValue(f.periodBegin) + ")");
+        System.out.println("plt.axhline(" + f.getValue(f.periodBegin + f.periodLength) + ")");
         System.out.println("x = [" + xs + "]");
         System.out.println("y = [" + ys + "]");
         System.out.println("plt.step(x, y, where='post')");
-        System.out.println("plt.axvline(" + f.periodLength + ")");
-        System.out.println("plt.axhline(" + f.periodIncrement + ")");
         System.out.println();
     }
 
-    public static void dumpArrivalCurveMatplotlib(ArrivalCurve curve, long finalSegmentEnd) {
+    public void printArrivalCurve(ArrivalCurve curve, long finalSegmentEnd) {
         StringBuilder xs = new StringBuilder();
         StringBuilder ys = new StringBuilder();
         boolean first = true;
@@ -81,15 +83,22 @@ public class Utils {
         System.out.println();
     }
 
-    public static void dumpMaxTrafficMatplotlib(ProtocolGraph graph, long maxTime) {
+    public void printMaxTraffic(ProtocolGraph graph, long maxTime) {
         PseudoPeriodicFunction f = graph.approximateSubadditive(maxTime);
         String xs = f.incrementTimeSteps.stream().map(Object::toString).collect(Collectors.joining(", "));
         String ys = f.incrementValues.stream().map(Object::toString).collect(Collectors.joining(", "));
+        xs += ", " + maxTime;
+        ys += ", " + f.getValue(maxTime);
 
         System.out.println("# Actual traffic up to " + maxTime);
         System.out.println("x = [" + xs + "]");
         System.out.println("y = [" + ys + "]");
         System.out.println("plt.step(x, y, where='post')");
         System.out.println();
+    }
+
+    @Override
+    public String toString() {
+        return "matplotlib";
     }
 }

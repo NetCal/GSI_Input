@@ -26,9 +26,9 @@ public class ProtocolGraphTest extends TestCase {
     }
 
     public void testMaxTraffic() throws Exception {
-        assertEquals(0, graph.maxTraffic(0));
-        assertEquals(4, graph.maxTraffic(1));
-        assertEquals(203, graph.maxTraffic(100000000));
+        assertEquals(0., graph.maxTraffic(0));
+        assertEquals(4., graph.maxTraffic(1));
+        assertEquals(203., graph.maxTraffic(100000000));
     }
 
     public void testApproximateSubadditiveIsAboveActualArrivalCurve() throws Exception {
@@ -81,9 +81,9 @@ public class ProtocolGraphTest extends TestCase {
         Block superBlock = graph.blocksToSuperBlock(blocks);
         assertEquals("B_CRY_0--B_CRY_0--B_CRY_HALT", superBlock.getLabel());
         assertEquals(5500500000L, superBlock.getPeriod());
-        assertEquals(21, superBlock.maxPrefix(2750000000L));
-        assertEquals(42, superBlock.maxPrefix(5500000000L));
-        assertEquals(43, superBlock.maxPrefix(5500500000L));
+        assertEquals(21., superBlock.maxPrefix(2750000000L));
+        assertEquals(42., superBlock.maxPrefix(5500000000L));
+        assertEquals(43., superBlock.maxPrefix(5500500000L));
     }
 
     public void testGetSuccessiveBlocksOfSpecificBlock() {
@@ -122,8 +122,8 @@ public class ProtocolGraphTest extends TestCase {
     public void testDumpGraph() {
         PseudoPeriodicFunction f = graph.approximateSubadditive(10_000_000_000L);
         ArrivalCurve curve = f.concaveHull();
-        Utils.dumpMaxTrafficMatplotlib(graph, 20_000_000_000L);
-        Utils.dumpPseudoperiodicFunctionMatplotlib(f, 20_000_000_000L);
-        Utils.dumpArrivalCurveMatplotlib(curve, 20_000_000_000L);
+        new MatplotlibOutputFormatter().printMaxTraffic(graph, 20_000_000_000L);
+        new MatplotlibOutputFormatter().printPseudoperiodicFunction(f, 20_000_000_000L);
+        new MatplotlibOutputFormatter().printArrivalCurve(curve, 20_000_000_000L);
     }
 }

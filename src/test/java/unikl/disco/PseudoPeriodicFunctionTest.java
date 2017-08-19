@@ -29,43 +29,43 @@ public class PseudoPeriodicFunctionTest extends TestCase {
     }
 
     public void testGetValue() throws Exception {
-        assertEquals("Time before function returns 0", 0, func.getValue(-1));
-        assertEquals("Exact match returns exact value", 0, func.getValue(0));
-        assertEquals("Exact match returns exact value", 1, func.getValue(1));
-        assertEquals("Exact match returns exact value", 7, func.getValue(64));
-        assertEquals("Exact match returns exact value", 8, func.getValue(102));
-        assertEquals("Inexact match returns previous value", 2, func.getValue(3));
-        assertEquals("Inexact match returns previous value", 4, func.getValue(12));
-        assertEquals("Inexact match returns previous value", 7, func.getValue(99));
-        assertEquals("Inexact match returns previous value", 8, func.getValue(103));
-        assertEquals("Increment used correctly", 9, func.getValue(105));
-        assertEquals("Increment used correctly", 11, func.getValue(110));
-        assertEquals("Increment used correctly", 13, func.getValue(115));
-        assertEquals("Function interpolated correctly", 9, func.getValue(106));
-        assertEquals("Function interpolated correctly", 10, func.getValue(107));
-        assertEquals("Function interpolated correctly", 11, func.getValue(111));
-        assertEquals("Function interpolated correctly", 12, func.getValue(112));
+        assertEquals("Time before function returns 0", 0., func.getValue(-1));
+        assertEquals("Exact match returns exact value", 0., func.getValue(0));
+        assertEquals("Exact match returns exact value", 1., func.getValue(1));
+        assertEquals("Exact match returns exact value", 7., func.getValue(64));
+        assertEquals("Exact match returns exact value", 8., func.getValue(102));
+        assertEquals("Inexact match returns previous value", 2., func.getValue(3));
+        assertEquals("Inexact match returns previous value", 4., func.getValue(12));
+        assertEquals("Inexact match returns previous value", 7., func.getValue(99));
+        assertEquals("Inexact match returns previous value", 8., func.getValue(103));
+        assertEquals("Increment used correctly", 9., func.getValue(105));
+        assertEquals("Increment used correctly", 11., func.getValue(110));
+        assertEquals("Increment used correctly", 13., func.getValue(115));
+        assertEquals("Function interpolated correctly", 9., func.getValue(106));
+        assertEquals("Function interpolated correctly", 10., func.getValue(107));
+        assertEquals("Function interpolated correctly", 11., func.getValue(111));
+        assertEquals("Function interpolated correctly", 12., func.getValue(112));
     }
 
     public void testIncrementValueAtPeriodBorder() throws Exception {
         func.setValueAt(105, 9);
 
-        assertEquals("Time before function does not return 0", 0, func.getValue(-1));
-        assertEquals("Exact match does not return exact value", 0, func.getValue(0));
-        assertEquals("Exact match does not return exact value", 1, func.getValue(1));
-        assertEquals("Exact match does not return exact value", 7, func.getValue(64));
-        assertEquals("Exact match does not return exact value", 8, func.getValue(102));
-        assertEquals("Inexact match does not return previous value", 2, func.getValue(3));
-        assertEquals("Inexact match does not return previous value", 4, func.getValue(12));
-        assertEquals("Inexact match does not return previous value", 7, func.getValue(99));
-        assertEquals("Inexact match does not return previous value", 8, func.getValue(103));
-        assertEquals("Increment used incorrectly", 9, func.getValue(105));
-        assertEquals("Increment used incorrectly", 11, func.getValue(110));
-        assertEquals("Increment used incorrectly", 13, func.getValue(115));
-        assertEquals("Function interpolated incorrectly", 9, func.getValue(106));
-        assertEquals("Function interpolated incorrectly", 10, func.getValue(107));
-        assertEquals("Function interpolated incorrectly", 11, func.getValue(111));
-        assertEquals("Function interpolated incorrectly", 12, func.getValue(112));
+        assertEquals("Time before function does not return 0", 0., func.getValue(-1));
+        assertEquals("Exact match does not return exact value", 0., func.getValue(0));
+        assertEquals("Exact match does not return exact value", 1., func.getValue(1));
+        assertEquals("Exact match does not return exact value", 7., func.getValue(64));
+        assertEquals("Exact match does not return exact value", 8., func.getValue(102));
+        assertEquals("Inexact match does not return previous value", 2., func.getValue(3));
+        assertEquals("Inexact match does not return previous value", 4., func.getValue(12));
+        assertEquals("Inexact match does not return previous value", 7., func.getValue(99));
+        assertEquals("Inexact match does not return previous value", 8., func.getValue(103));
+        assertEquals("Increment used incorrectly", 9., func.getValue(105));
+        assertEquals("Increment used incorrectly", 11., func.getValue(110));
+        assertEquals("Increment used incorrectly", 13., func.getValue(115));
+        assertEquals("Function interpolated incorrectly", 9., func.getValue(106));
+        assertEquals("Function interpolated incorrectly", 10., func.getValue(107));
+        assertEquals("Function interpolated incorrectly", 11., func.getValue(111));
+        assertEquals("Function interpolated incorrectly", 12., func.getValue(112));
     }
 
     public void testConcaveHull() {

@@ -28,4 +28,12 @@ public class FullyConnectedRescaledProtocolGraphTest extends TestCase {
         }
     }
 
+    public void testDivideTraffic() {
+        long time = 0;
+        while (time < 2 * rescaledGraph.longestBlockLength()) {
+            double value = rescaledGraph.maxTraffic(time);
+            assertTrue("At time " + time + " max traffic = " + value + ", division = " + rescaledGraph.divideTrafficBetweenPrefixAndSuffix(time), rescaledGraph.divideTrafficBetweenPrefixAndSuffix(time) <= value);
+            time = rescaledGraph.firstTimeExceeding(value);
+        }
+    }
 }

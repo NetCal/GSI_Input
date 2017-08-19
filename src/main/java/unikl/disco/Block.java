@@ -120,7 +120,7 @@ public class Block implements Iterable<Message> {
     public long getShortestIntervalWhereMaxTrafficExceeds(double value) {
         long shortestInterval = Long.MAX_VALUE;
         for (Message message : messages) {
-            double trafficBefore = message.getOffset() == 0 ? 0 : maxPrefix(message.getOffset() - 1);
+            double trafficBefore = maxPrefix(message.getOffset()); // Offset is 0-indexed -> offset i = i slots before
             double trafficToReach = value + trafficBefore;
             long intervalToReach = getEarliestTimeMaxPrefixExceeds(trafficToReach);
             long actualInterval = intervalToReach - message.getOffset();

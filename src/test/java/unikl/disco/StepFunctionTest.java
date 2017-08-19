@@ -40,30 +40,30 @@ public class StepFunctionTest extends TestCase {
 
 
     public void testGetValue() throws Exception {
-        assertEquals("Time before function returns 0", 0, func.getValue(-1));
-        assertEquals("Exact match returns exact value", 0, func.getValue(0));
-        assertEquals("Exact match returns exact value", 1, func.getValue(1));
-        assertEquals("Exact match returns exact value", 7, func.getValue(64));
-        assertEquals("Inexact match returns previous value", 2, func.getValue(3));
-        assertEquals("Inexact match returns previous value", 4, func.getValue(12));
-        assertEquals("Inexact match returns previous value", 7, func.getValue(99));
-        assertEquals("Inexact match returns previous value", 7, func.getValue(103));
+        assertEquals("Time before function returns 0", 0., func.getValue(-1));
+        assertEquals("Exact match returns exact value", 0., func.getValue(0));
+        assertEquals("Exact match returns exact value", 1., func.getValue(1));
+        assertEquals("Exact match returns exact value", 7., func.getValue(64));
+        assertEquals("Inexact match returns previous value", 2., func.getValue(3));
+        assertEquals("Inexact match returns previous value", 4., func.getValue(12));
+        assertEquals("Inexact match returns previous value", 7., func.getValue(99));
+        assertEquals("Inexact match returns previous value", 7., func.getValue(103));
     }
 
     public void testMaxInterval() {
-        assertEquals(0, func.maximumInterval(0, 32));
-        assertEquals(1, func.maximumInterval(1, 32));
-        assertEquals(2, func.maximumInterval(2, 32));
-        assertEquals(2, func.maximumInterval(3, 32));
-        assertEquals(3, func.maximumInterval(4, 32));
-        assertEquals(3, func.maximumInterval(5, 32));
-        assertEquals(3, func.maximumInterval(6, 32));
-        assertEquals(3, func.maximumInterval(7, 32));
-        assertEquals(4, func.maximumInterval(8, 32));
+        assertEquals(0., func.maximumInterval(0, 32));
+        assertEquals(1., func.maximumInterval(1, 32));
+        assertEquals(2., func.maximumInterval(2, 32));
+        assertEquals(2., func.maximumInterval(3, 32));
+        assertEquals(3., func.maximumInterval(4, 32));
+        assertEquals(3., func.maximumInterval(5, 32));
+        assertEquals(3., func.maximumInterval(6, 32));
+        assertEquals(3., func.maximumInterval(7, 32));
+        assertEquals(4., func.maximumInterval(8, 32));
     }
 
     public void testMaxValue() {
-        assertEquals(7, func.maximumValue());
+        assertEquals(7., func.maximumValue());
     }
 
     public void testLastStepTime() {
