@@ -10,6 +10,11 @@ import java.util.stream.Collectors;
 public class ProtocolGraph {
 
     private HashMap<String, Block> blocks = new HashMap<>();
+    Args args;
+
+    public ProtocolGraph(Args args) {
+        this.args = args;
+    }
 
     public void addBlock(Block block) {
         blocks.put(block.getLabel(), block);
@@ -114,6 +119,7 @@ public class ProtocolGraph {
         result.setValueAt(0, 0);
         long nextStep = firstTimeExceeding(0);
         while (nextStep <= k) {
+            if (args.verbose) System.out.println("[1] " + nextStep + "/" + k);
             double nextValue = maxTraffic(nextStep);
             result.setValueAt(nextStep, nextValue);
             nextStep = firstTimeExceeding(nextValue);
@@ -135,7 +141,7 @@ public class ProtocolGraph {
             }
         }
 
-        FullyConnectedProtocolGraph result = new FullyConnectedProtocolGraph();
+        FullyConnectedProtocolGraph result = new FullyConnectedProtocolGraph(args);
         superBlocks.forEach(result::addBlock);
 
         return result;

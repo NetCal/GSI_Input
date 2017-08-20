@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
  */
 public class FullyConnectedProtocolGraph extends ProtocolGraph {
 
+    public FullyConnectedProtocolGraph(Args args) {
+        super(args);
+    }
+
     public FullyConnectedRescaledProtocolGraph rescale() {
         long blockLength = shortestBlockLength();
         Set<Block> rescaledBlocks = this.getBlocks().stream()
@@ -20,7 +24,7 @@ public class FullyConnectedProtocolGraph extends ProtocolGraph {
             }
         }
 
-        FullyConnectedRescaledProtocolGraph graph = new FullyConnectedRescaledProtocolGraph();
+        FullyConnectedRescaledProtocolGraph graph = new FullyConnectedRescaledProtocolGraph(args);
         rescaledBlocks.forEach(graph::addBlock);
         return graph;
     }
@@ -39,26 +43,31 @@ public class FullyConnectedProtocolGraph extends ProtocolGraph {
 
     public PseudoPeriodicFunction approximateMostEfficientLoop() {
         double highestAverageTraffic = highestAverageBlockTraffic();
-        PseudoPeriodicFunction function = new PseudoPeriodicFunction(2 * longestBlockLength(), 1, highestAverageTraffic);
+        long longestBlockLen = longestBlockLength();
+        PseudoPeriodicFunction function = new PseudoPeriodicFunction(2 * longestBlockLen, 1, highestAverageTraffic);
 
         long time = 0;
         double value = 0;
-        while (time < 2 * longestBlockLength()) {
+        while (time < 2 * longestBlockLen) {
+            if (args.verbose) System.out.println("[1] " + time + "/" + 2 * longestBlockLen);
             function.setValueAt(time, value);
             time = firstTimeExceeding(value);
             value = maxTraffic(time);
         }
 
-        function.setValueAt(2 * longestBlockLength(), splitTrafficBetweenPrefixAndSuffix());
+        function.setValueAt(2 * longestBlockLen, splitTrafficBetweenPrefixAndSuffix());
         return function;
     }
 
     public double splitTrafficBetweenPrefixAndSuffix() {
+        long longestBlockLen = longestBlockLength();
+
         long timeInSuffix = 0;
         double maxTraffic = 0;
-        while (timeInSuffix < longestBlockLength()) {
+        while (timeInSuffix < longestBlockLen) {
+            if (args.verbose) System.out.println("[2] " + timeInSuffix + "/" + longestBlockLen);
             double trafficInSuffix = maxSuffix(timeInSuffix);
-            maxTraffic = Math.max(maxTraffic, trafficInSuffix + splitTrafficBetweenLoopAndPrefix(2 * longestBlockLength() - timeInSuffix));
+            maxTraffic = Math.max(maxTraffic, trafficInSuffix + splitTrafficBetweenLoopAndPrefix(2 * longestBlockLen - timeInSuffix));
             timeInSuffix = firstTimeExceedingInSuffix(trafficInSuffix);
         }
 

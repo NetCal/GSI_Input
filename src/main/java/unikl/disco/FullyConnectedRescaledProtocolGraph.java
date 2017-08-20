@@ -5,6 +5,10 @@ package unikl.disco;
  */
 public class FullyConnectedRescaledProtocolGraph extends ProtocolGraph {
 
+    public FullyConnectedRescaledProtocolGraph(Args args) {
+        super(args);
+    }
+
     public PseudoPeriodicFunction approximateTightestLoop() {
         long shortestBlockLen = shortestBlockLength();
         int highestBlockTraffic = highestBlockTraffic();
@@ -13,7 +17,7 @@ public class FullyConnectedRescaledProtocolGraph extends ProtocolGraph {
         long time = 0;
         double value = 0;
         while (time < 2 * shortestBlockLen) {
-            System.out.println("[1] " + time + " / " + (3 * shortestBlockLen));
+            if (args.verbose) System.out.println("[1] " + time + " / " + (3 * shortestBlockLen));
             function.setValueAt(time, value);
             time = firstTimeExceeding(value);
             value = maxTraffic(time);
@@ -21,7 +25,7 @@ public class FullyConnectedRescaledProtocolGraph extends ProtocolGraph {
 
         time = shortestBlockLen;
         while (time < 2 * shortestBlockLen) {
-            System.out.println("[2] " + (time + shortestBlockLen) + " / " + (3 * shortestBlockLen));
+            if (args.verbose) System.out.println("[2] " + (time + shortestBlockLen) + " / " + (3 * shortestBlockLen));
             value = divideTrafficBetweenPrefixAndSuffix(time);
             function.setValueAt(shortestBlockLen + time, highestBlockTraffic + value);
             time = nextStepForDividedTraffic(value);

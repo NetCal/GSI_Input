@@ -2,6 +2,7 @@ package unikl.disco;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import org.apache.commons.lang.time.DurationFormatUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,7 +39,9 @@ public class Main {
             System.exit(1);
         }
 
-        ProtocolGraph graph = new DotGraphParser(new FileInputStream(args.path)).parse();
+        long time = System.currentTimeMillis();
+
+        ProtocolGraph graph = new DotGraphParser(new FileInputStream(args.path), args).parse();
         switch (args.heuristic) {
             case SUBADDITIVE:
                 approximateSubadditive(args, graph);
@@ -50,6 +53,8 @@ public class Main {
                 approximateRescale(args, graph);
                 break;
         }
+
+        if (args.verbose) DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - time);
     }
 
     private static void approximateSubadditive(Args args, ProtocolGraph graph) {

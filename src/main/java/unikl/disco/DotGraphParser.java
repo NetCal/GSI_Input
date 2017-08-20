@@ -18,9 +18,16 @@ import java.util.Map;
  */
 public class DotGraphParser {
     private final InputStream source;
+    private Args args;
+
+    public DotGraphParser(InputStream source, Args args) {
+        this.source = source;
+        this.args = args;
+    }
 
     public DotGraphParser(InputStream source) {
         this.source = source;
+        this.args = new Args();
     }
 
     private boolean isAttrPresent(MutableNode node, String targetAttr) {
@@ -91,7 +98,7 @@ public class DotGraphParser {
         MutableGraph rawGraph = Parser.read(source);
 
         // Transform the graph into a nicer format
-        ProtocolGraph graph = new ProtocolGraph();
+        ProtocolGraph graph = new ProtocolGraph(args);
         // input block -> output block
         Map<MutableNode, Block> blockMap = new HashMap<>();
         // input block -> output messages belonging to that block
