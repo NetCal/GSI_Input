@@ -54,7 +54,7 @@ public class Main {
                 break;
         }
 
-        if (args.verbose) DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - time);
+        if (args.verbose) System.out.println("Finished in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - time));
     }
 
     private static void approximateSubadditive(Args args, ProtocolGraph graph) {
