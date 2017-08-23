@@ -28,6 +28,9 @@ public class Block implements Iterable<Message> {
     }
 
     public void addMessage(Message message) {
+        if (message.getOffset() < 0 || message.getOffset() >= period) {
+            throw new IllegalArgumentException("Message offset invalid (below zero or exceeding period): " + label + "/" + message.getLabel());
+        }
         this.messages.add(message);
         this.totalTraffic += message.getSize();
 
