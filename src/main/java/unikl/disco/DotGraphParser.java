@@ -32,7 +32,7 @@ public class DotGraphParser {
 
     private boolean isAttrPresent(MutableNode node, String targetAttr) {
         for (Map.Entry<String, Object> attr : node.attrs()) {
-            if (attr.getKey().equals(targetAttr)) {
+            if (attr.getKey().equalsIgnoreCase(targetAttr)) {
                 return true;
             }
         }
@@ -42,7 +42,7 @@ public class DotGraphParser {
 
     private String getAttrString(MutableNode node, String targetAttr) {
         for (Map.Entry<String, Object> attr : node.attrs()) {
-            if (attr.getKey().equals(targetAttr)) {
+            if (attr.getKey().equalsIgnoreCase(targetAttr)) {
                 return (String) attr.getValue();
             }
         }
@@ -52,7 +52,7 @@ public class DotGraphParser {
 
     private long getAttrLong(MutableNode node, String targetAttr) {
         for (Map.Entry<String, Object> attr : node.attrs()) {
-            if (attr.getKey().equals(targetAttr)) {
+            if (attr.getKey().equalsIgnoreCase(targetAttr)) {
                 return Long.parseLong(attr.getValue().toString());
             }
         }
@@ -70,7 +70,7 @@ public class DotGraphParser {
 
             for (Link link : other.links()) {
                 if (((MutableNodePoint) link.to()).node().equals(node)) {
-                    if (getAttrString(other, "type").equals("Block")) {
+                    if (getAttrString(other, "type").equalsIgnoreCase("Block")) {
                         throw new IllegalStateException("Block to block link: " + other.label() + " -> " + node.label());
                     }
 
@@ -108,7 +108,7 @@ public class DotGraphParser {
 
 
         for (MutableNode vertex : rawGraph.nodes()) {
-            if (getAttrString(vertex, "type").equals("Block")) {
+            if (getAttrString(vertex, "type").equalsIgnoreCase("Block")) {
                 // Verify that block node was parsed correctly
                 if (inDegreeOf(rawGraph, vertex) != 1) {
                     throw new IllegalStateException("Invalid incoming edge count for block type vertex " + vertex.label() + " (" + inDegreeOf(rawGraph, vertex) + ")");
@@ -118,11 +118,11 @@ public class DotGraphParser {
                     blockMap.put(vertex, new Block(vertex.label().toString(), getAttrLong(vertex, "tPeriod")));
                     messagesInBlock.put(vertex, new ArrayList<>());
                 }
-            } else if (getAttrString(vertex, "type").equals("TMsg")) {
+            } else if (getAttrString(vertex, "type").equalsIgnoreCase("TMsg")) {
                 // Find the block following this message
                 MutableNode current = vertex;
                 int idxBack = -1;
-                while (!getAttrString(current, "type").equals("Block")) {
+                while (!getAttrString(current, "type").equalsIgnoreCase("Block")) {
                     if (outDegreeOf(current) != 1) {
                         throw new IllegalStateException("Invalid outgoing edge count for msg type vertex " + current.label() + " (" + outDegreeOf(current) + ")");
                     }
