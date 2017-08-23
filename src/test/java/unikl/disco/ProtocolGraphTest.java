@@ -123,7 +123,7 @@ public class ProtocolGraphTest extends TestCase {
         PseudoPeriodicFunction f = graph.approximateSubadditive(10_000_000_000L);
         ArrivalCurve curve = f.concaveHull();
         new MatplotlibOutputFormatter().printMaxTraffic(graph, 20_000_000_000L);
-        new MatplotlibOutputFormatter().printPseudoperiodicFunction(f, 20_000_000_000L);
+        new MatplotlibOutputFormatter().printPseudoperiodicFunction(graph, f, 20_000_000_000L);
         new MatplotlibOutputFormatter().printArrivalCurve(curve, 20_000_000_000L);
     }
 }

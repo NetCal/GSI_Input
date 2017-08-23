@@ -3,42 +3,22 @@ package unikl.disco;
 import unikl.disco.curves.ArrivalCurve;
 import unikl.disco.numbers.NumFactory;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * @author Malte Schütze
  */
 public class MatplotlibOutputFormatter implements OutputFormatter {
-    public void printPseudoperiodicFunction(PseudoPeriodicFunction f, long finalTime) {
-        String xs = f.incrementTimeSteps.stream().map(Object::toString).collect(Collectors.joining(", "));
-        String ys = f.incrementValues.stream().map(Object::toString).collect(Collectors.joining(", "));
-        int timeIdx = Collections.binarySearch(f.incrementTimeSteps, f.periodBegin);
-        if (timeIdx < 0) {
-            timeIdx = -(timeIdx + 1);
-        }
-        if (timeIdx == f.incrementTimeSteps.size()) {
-            xs += ", " + finalTime;
-            ys += ", " + f.incrementValues.get(f.incrementValues.size() - 1);
-        } else {
-            long time = f.periodLength + f.incrementTimeSteps.get(timeIdx);
-            StringBuilder xsBuilder = new StringBuilder(xs);
-            StringBuilder ysBuilder = new StringBuilder(ys);
-            int timeIdxOffset = 0;
-            while (time <= finalTime) {
-                xsBuilder.append(", ").append(time);
-                ysBuilder.append(", ").append(f.getValue(time));
+    public void printPseudoperiodicFunction(ProtocolGraph graph, PseudoPeriodicFunction f, long finalTime) {
+        // Run full approximation just to find the time steps
+        boolean verbose = graph.args.verbose;
+        graph.args.verbose = false;
+        List<Long> steps = graph.approximateSubadditive(finalTime).incrementTimeSteps;
+        graph.args.verbose = true;
 
-                timeIdxOffset += 1;
-                timeIdxOffset %= (f.incrementTimeSteps.size() - timeIdx);
-                long t = f.incrementTimeSteps.get(timeIdx + timeIdxOffset);
-                long deltaT = (timeIdx + timeIdxOffset == 0) ? t : t - f.incrementTimeSteps.get(timeIdx + timeIdxOffset - 1);
-                time += deltaT;
-            }
-
-            ys = ysBuilder.toString();
-            xs = xsBuilder.toString();
-        }
+        String xs = steps.stream().map(Object::toString).collect(Collectors.joining(", "));
+        String ys = steps.stream().map(t -> Double.toString(f.getValue(t))).collect(Collectors.joining(", "));
 
         System.out.println("# Pseudo-periodic function up to " + finalTime);
         System.out.println("plt.axvline(" + f.periodBegin + ")");
@@ -47,7 +27,7 @@ public class MatplotlibOutputFormatter implements OutputFormatter {
         System.out.println("plt.axhline(" + f.getValue(f.periodBegin + f.periodLength) + ")");
         System.out.println("x = [" + xs + "]");
         System.out.println("y = [" + ys + "]");
-        System.out.println("plt.step(x, y, where='post')");
+        System.out.println("legend_entry_pp, = plt.step(x, y, where='post', label='Pseudoperiodic Approximation')");
         System.out.println();
     }
 
@@ -79,12 +59,16 @@ public class MatplotlibOutputFormatter implements OutputFormatter {
         System.out.println("# Concave hull up to " + finalSegmentEnd);
         System.out.println("x = [" + xs + "]");
         System.out.println("y = [" + ys + "]");
-        System.out.println("plt.plot(x, y)");
+        System.out.println("legend_entry_ch, = plt.plot(x, y, label='Concave Hull')");
         System.out.println();
     }
 
     public void printMaxTraffic(ProtocolGraph graph, long maxTime) {
+        boolean verbose = graph.args.verbose;
+        graph.args.verbose = false;
         PseudoPeriodicFunction f = graph.approximateSubadditive(maxTime);
+        graph.args.verbose = verbose;
+
         String xs = f.incrementTimeSteps.stream().map(Object::toString).collect(Collectors.joining(", "));
         String ys = f.incrementValues.stream().map(Object::toString).collect(Collectors.joining(", "));
         xs += ", " + maxTime;
@@ -93,7 +77,7 @@ public class MatplotlibOutputFormatter implements OutputFormatter {
         System.out.println("# Actual traffic up to " + maxTime);
         System.out.println("x = [" + xs + "]");
         System.out.println("y = [" + ys + "]");
-        System.out.println("plt.step(x, y, where='post')");
+        System.out.println("legend_entry_mt, = plt.step(x, y, where='post', label='Max Traffic')");
         System.out.println();
     }
 

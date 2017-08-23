@@ -41,7 +41,9 @@ public class Main {
 
         long time = System.currentTimeMillis();
 
+        System.out.println("Parsing graph at '" + args.path + "'");
         ProtocolGraph graph = new DotGraphParser(new FileInputStream(args.path), args).parse();
+        System.out.println("Done (" + graph.getBlockCount() + " blocks)");
         switch (args.heuristic) {
             case SUBADDITIVE:
                 approximateSubadditive(args, graph);
@@ -69,7 +71,7 @@ public class Main {
 
         if (args.verbose) {
             args.formatter.printMaxTraffic(graph, args.threshold > 0 ? 2 * threshold : f.periodBegin + 3 * f.periodLength);
-            args.formatter.printPseudoperiodicFunction(f, args.threshold > 0 ? 2 * threshold : f.periodBegin + 3 * f.periodLength);
+            args.formatter.printPseudoperiodicFunction(graph, f, args.threshold > 0 ? 2 * threshold : f.periodBegin + 3 * f.periodLength);
         }
         args.formatter.printArrivalCurve(f.concaveHull(), args.threshold > 0 ? 2 * threshold : f.periodBegin + 3 * f.periodLength);
     }
@@ -88,7 +90,7 @@ public class Main {
         System.out.println("Approximation created");
         if (args.verbose) {
             args.formatter.printMaxTraffic(graph, args.threshold > 0 ? 2 * args.threshold :  f.periodBegin + 3 * f.periodLength);
-            args.formatter.printPseudoperiodicFunction(f, args.threshold > 0 ? 2 * args.threshold : f.periodBegin + 3 * f.periodLength);
+            args.formatter.printPseudoperiodicFunction(graph, f, args.threshold > 0 ? 2 * args.threshold : f.periodBegin + 3 * f.periodLength);
         }
         args.formatter.printArrivalCurve(f.concaveHull(), args.threshold > 0 ? 2 * args.threshold : f.periodBegin + 3 * f.periodLength);
     }
@@ -107,7 +109,7 @@ public class Main {
         System.out.println("Approximation created");
         if (args.verbose) {
             args.formatter.printMaxTraffic(graph, args.threshold > 0 ? 2 * args.threshold :  f.periodBegin + 3 * f.periodLength);
-            args.formatter.printPseudoperiodicFunction(f, args.threshold > 0 ? 2 * args.threshold : f.periodBegin + 3 * f.periodLength);
+            args.formatter.printPseudoperiodicFunction(graph, f, args.threshold > 0 ? 2 * args.threshold : f.periodBegin + 3 * f.periodLength);
         }
         args.formatter.printArrivalCurve(f.concaveHull(), args.threshold > 0 ? 2 * args.threshold : f.periodBegin + 3 * f.periodLength);
     }

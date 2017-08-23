@@ -7,7 +7,7 @@ import unikl.disco.curves.ArrivalCurve;
  */
 public class DiscoDncFormatter implements OutputFormatter {
     @Override
-    public void printPseudoperiodicFunction(PseudoPeriodicFunction f, long time) {
+    public void printPseudoperiodicFunction(ProtocolGraph graph, PseudoPeriodicFunction f, long time) {
         // pseudoperiodic function omitted
     }
 
