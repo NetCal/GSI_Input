@@ -84,6 +84,15 @@ public class Block implements Iterable<Message> {
 
         long earliestIncrement = Long.MAX_VALUE;
         for (Block block : nextBlocks) {
+            if (block == this && block.totalTraffic == 0) {
+                // Endless recursion if we do not catch this
+                // Note that this can also happen with a sequence of empty blocks (what the hell are you doing, tho?)
+                if (nextBlocks.size() == 1) {
+                    throw new IllegalStateException(label + ": Can't calculate next max prefix increment time! My only connection is to myself and I do not have any traffic");
+                } else {
+                    continue; // Just skip myself, every other block will provide tighter bound
+                }
+            }
             long increment = block.getEarliestTimeMaxPrefixExceeds(remaining);
             if (increment < earliestIncrement) {
                 earliestIncrement = increment;
@@ -99,6 +108,16 @@ public class Block implements Iterable<Message> {
 
         long earliestIncrement = Long.MAX_VALUE;
         for (Block block : previousBlocks) {
+            if (block == this && block.totalTraffic == 0) {
+                // Endless recursion if we do not catch this
+                // Note that this can also happen with a sequence of empty blocks (what the hell are you doing, tho?)
+                if (nextBlocks.size() == 1) {
+                    throw new IllegalStateException(label + ": Can't calculate next max prefix increment time! My only connection is to myself and I do not have any traffic");
+                } else {
+                    continue; // Just skip myself, every other block will provide tighter bound
+                }
+            }
+
             long increment = block.getEarliestTimeMaxSuffixExceeds(remaining);
             earliestIncrement = Math.min(increment, earliestIncrement);
         }
