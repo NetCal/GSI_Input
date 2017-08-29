@@ -1,0 +1,31 @@
+digraph G {
+graph [root="B_0", nodesep=0.6, mindist=1.0, ranksep=1.0, overlap=false]
+node [shape="oval", color="black"]
+edge [type="defDst", color="red"]
+
+MSG_B0_0 [type="TMsg", tOffs=0, size=1];
+B_0      [type="Block", shape="rectangle", color="red", tPeriod=1];
+
+MSG_B1_1 [type="TMsg", tOffs=0, size=2];
+B1_1     [type="Block", shape="rectangle", color="red", tPeriod=1];
+
+MSG_B1_2 [type="TMsg", tOffs=0, size=6];
+B1_2     [type="Block", shape="rectangle", color="red", tPeriod=1];
+
+MSG_B2_1 [type="TMsg", tOffs=0, size=2];
+B2_1     [type="Block", shape="rectangle", color="red", tPeriod=1];
+
+MSG_B2_2 [type="TMsg", tOffs=0, size=9];
+B2_2     [type="Block", shape="rectangle", color="red", tPeriod=1];
+
+MSG_B2_3 [type="TMsg", tOffs=0, size=0];
+B2_3      [type="Block", shape="rectangle", color="red", tPeriod=1];
+
+MSG_B0_0 -> B_0;
+
+B_0 -> MSG_B1_1;
+B_0 -> MSG_B2_1;
+
+MSG_B1_1 -> B1_1 -> MSG_B1_2 -> B1_2 -> MSG_B1_1;
+MSG_B2_1 -> B2_1 -> MSG_B2_2 -> B2_2 -> MSG_B2_3 -> B2_3 -> MSG_B2_1;
+}
