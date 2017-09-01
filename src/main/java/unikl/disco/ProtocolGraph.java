@@ -144,6 +144,10 @@ public class ProtocolGraph {
         FullyConnectedProtocolGraph result = new FullyConnectedProtocolGraph(args);
         superBlocks.forEach(result::addBlock);
 
+        if (args.verbose) {
+            System.out.println("Created fully-connected model (" + superBlocks.size() + " blocks)");
+        }
+
         return result;
     }
 

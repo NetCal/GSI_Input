@@ -29,6 +29,12 @@ public class Args {
     @Parameter(names = {"-n", "--numblocks"}, description = "Number of sequential blocks for building fully-connected model. 0 for auto")
     public int numBlocks;
 
+    @Parameter(names = {"-b", "--benchmark"}, description = "Run program in benchmark mode")
+    public boolean benchmark;
+
+    @Parameter(names = {"-B", "--bench-iters"}, description = "How many iterations for benchmark")
+    public int benchmarkIterations = 5;
+
     public enum Heuristic {
         SUBADDITIVE,
         RESCALE,

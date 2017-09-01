@@ -39,24 +39,57 @@ public class Main {
             System.exit(1);
         }
 
-        long time = System.currentTimeMillis();
 
         System.out.println("Parsing graph at '" + args.path + "'");
         ProtocolGraph graph = new DotGraphParser(new FileInputStream(args.path), args).parse();
         System.out.println("Done (" + graph.getBlockCount() + " blocks)");
-        switch (args.heuristic) {
-            case SUBADDITIVE:
-                approximateSubadditive(args, graph);
-                break;
-            case LOOP:
-                approximateLoop(args, graph);
-                break;
-            case RESCALE:
-                approximateRescale(args, graph);
-                break;
+
+        int iterations = args.benchmark ? args.benchmarkIterations : 1;
+        if (args.benchmark && args.benchmarkIterations <= 1) {
+            System.err.println(args.benchmarkIterations + ": Invalid number of benchmark iterations (must be >= 2)");
+            System.exit(1);
         }
 
-        if (args.verbose) System.out.println("Finished in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - time));
+        long[] times = new long[iterations];
+        for (int i = 0; i < iterations; i++) {
+            long time = System.currentTimeMillis();
+
+            switch (args.heuristic) {
+                case SUBADDITIVE:
+                    approximateSubadditive(args, graph);
+                    break;
+                case LOOP:
+                    approximateLoop(args, graph);
+                    break;
+                case RESCALE:
+                    approximateRescale(args, graph);
+                    break;
+            }
+
+            long delta = System.currentTimeMillis() - time;
+            times[i] = delta;
+            if (args.verbose) {
+                System.out.println("Finished in " + DurationFormatUtils.formatDurationHMS(delta));
+            }
+        }
+
+        if (args.benchmark) {
+            long total = 0;
+            for (int i = 0; i < iterations; i++) {
+                total += times[i];
+            }
+
+            double average = total / (double) iterations;
+            System.out.println("Average: " + DurationFormatUtils.formatDurationHMS((long) average));
+
+            double var = 0;
+            for (int i = 0; i < iterations; i++) {
+                var += Math.pow(times[i] - average, 2);
+            }
+
+            double stdDev = Math.sqrt(var / (iterations - 1));
+            System.out.println("StdDev: " + DurationFormatUtils.formatDurationHMS((long) stdDev));
+        }
     }
 
     private static void approximateSubadditive(Args args, ProtocolGraph graph) {
