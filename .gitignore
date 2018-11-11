@@ -1,4 +1,26 @@
-.idea
-target/
+# LaTeX / PDFs
+*.pdf
+*.aux
+*.log
+*.gz
+*.toc
+*.out
+*.bcf
+*.preview.tex
+*.preview_BB.txt
+*.bcf
+*.out
+
+# IDE files
 *.iml
+.idea/
+target/
 dependency-reduced-pom.xml
+
+
+# Compiler artefacts
+*.jar
+*.class
+
+.DS_STORE
+.~lock.*
