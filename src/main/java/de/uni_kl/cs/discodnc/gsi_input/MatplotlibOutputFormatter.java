@@ -1,10 +1,10 @@
-package unikl.disco;
-
-import unikl.disco.curves.ArrivalCurve;
-import unikl.disco.numbers.NumFactory;
+package de.uni_kl.cs.discodnc.gsi_input;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import de.uni_kl.cs.discodnc.gsi_input.curves.ArrivalCurve;
+import de.uni_kl.cs.discodnc.gsi_input.numbers.NumFactory;
 
 /**
  * @author Malte Schütze

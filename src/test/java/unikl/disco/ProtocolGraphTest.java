@@ -1,15 +1,22 @@
 package unikl.disco;
 
 import junit.framework.TestCase;
-import unikl.disco.curves.ArrivalCurve;
-import unikl.disco.numbers.Num;
-import unikl.disco.numbers.NumFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import de.uni_kl.cs.discodnc.gsi_input.Block;
+import de.uni_kl.cs.discodnc.gsi_input.DotGraphParser;
+import de.uni_kl.cs.discodnc.gsi_input.FullyConnectedProtocolGraph;
+import de.uni_kl.cs.discodnc.gsi_input.MatplotlibOutputFormatter;
+import de.uni_kl.cs.discodnc.gsi_input.ProtocolGraph;
+import de.uni_kl.cs.discodnc.gsi_input.PseudoPeriodicFunction;
+import de.uni_kl.cs.discodnc.gsi_input.curves.ArrivalCurve;
+import de.uni_kl.cs.discodnc.gsi_input.numbers.Num;
+import de.uni_kl.cs.discodnc.gsi_input.numbers.NumFactory;
 
 /**
  * @author Malte Schütze

@@ -1,4 +1,4 @@
-package unikl.disco;
+package de.uni_kl.cs.discodnc.gsi_input;
 
 import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.Parameter;

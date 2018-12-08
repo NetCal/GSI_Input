@@ -1,5 +1,8 @@
 package unikl.disco;
 
+import de.uni_kl.cs.discodnc.gsi_input.Block;
+import de.uni_kl.cs.discodnc.gsi_input.DotGraphParser;
+import de.uni_kl.cs.discodnc.gsi_input.ProtocolGraph;
 import junit.framework.TestCase;
 
 /**

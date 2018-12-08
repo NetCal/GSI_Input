@@ -4,6 +4,11 @@ import junit.framework.TestCase;
 
 import java.util.Set;
 
+import de.uni_kl.cs.discodnc.gsi_input.Block;
+import de.uni_kl.cs.discodnc.gsi_input.DotGraphParser;
+import de.uni_kl.cs.discodnc.gsi_input.Message;
+import de.uni_kl.cs.discodnc.gsi_input.ProtocolGraph;
+
 /**
  * @author Malte Schütze
  */

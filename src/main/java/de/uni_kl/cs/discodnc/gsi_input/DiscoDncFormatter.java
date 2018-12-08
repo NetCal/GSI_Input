@@ -1,6 +1,6 @@
-package unikl.disco;
+package de.uni_kl.cs.discodnc.gsi_input;
 
-import unikl.disco.curves.ArrivalCurve;
+import de.uni_kl.cs.discodnc.gsi_input.curves.ArrivalCurve;
 
 /**
  * @author Malte Schütze

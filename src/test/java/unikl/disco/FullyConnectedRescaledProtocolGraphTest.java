@@ -1,5 +1,9 @@
 package unikl.disco;
 
+import de.uni_kl.cs.discodnc.gsi_input.DotGraphParser;
+import de.uni_kl.cs.discodnc.gsi_input.FullyConnectedRescaledProtocolGraph;
+import de.uni_kl.cs.discodnc.gsi_input.ProtocolGraph;
+import de.uni_kl.cs.discodnc.gsi_input.PseudoPeriodicFunction;
 import junit.framework.TestCase;
 
 /**

@@ -1,13 +1,13 @@
-package unikl.disco;
-
-import unikl.disco.curves.ArrivalCurve;
-import unikl.disco.curves.Curve;
-import unikl.disco.curves.LinearSegment;
-import unikl.disco.numbers.Num;
-import unikl.disco.numbers.NumFactory;
+package de.uni_kl.cs.discodnc.gsi_input;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.uni_kl.cs.discodnc.gsi_input.curves.ArrivalCurve;
+import de.uni_kl.cs.discodnc.gsi_input.curves.Curve;
+import de.uni_kl.cs.discodnc.gsi_input.curves.LinearSegment;
+import de.uni_kl.cs.discodnc.gsi_input.numbers.Num;
+import de.uni_kl.cs.discodnc.gsi_input.numbers.NumFactory;
 
 /**
  * @author Malte Schütze
