@@ -1,9 +1,11 @@
-package unikl.disco;
+package de.uni_kl.cs.discodnc.gsi_input;
 
 import de.uni_kl.cs.discodnc.gsi_input.PseudoPeriodicFunction;
-import de.uni_kl.cs.discodnc.gsi_input.curves.ArrivalCurve;
-import de.uni_kl.cs.discodnc.gsi_input.curves.LinearSegment;
-import de.uni_kl.cs.discodnc.gsi_input.numbers.NumFactory;
+import de.uni_kl.cs.discodnc.numbers.Num;
+import de.uni_kl.cs.discodnc.Calculator;
+import de.uni_kl.cs.discodnc.curves.ArrivalCurve;
+import de.uni_kl.cs.discodnc.curves.LinearSegment;
+
 import junit.framework.TestCase;
 
 /**
@@ -80,16 +82,18 @@ public class PseudoPeriodicFunctionTest extends TestCase {
 
         assertEquals(4, curve.getSegmentCount());
 
-        assertEquals(NumFactory.createZero(), curve.getSegment(1).getX());
-        assertEquals(NumFactory.create(1), curve.getSegment(1).getY());
-        assertEquals(NumFactory.create(1), curve.getSegment(1).getGrad());
+        Num num_factory = Num.getFactory(Calculator.getInstance().getNumBackend());
+        
+        assertEquals(num_factory.createZero(), curve.getSegment(1).getX());
+        assertEquals(num_factory.create(1), curve.getSegment(1).getY());
+        assertEquals(num_factory.create(1), curve.getSegment(1).getGrad());
 
-        assertEquals(NumFactory.create(1), curve.getSegment(2).getX());
-        assertEquals(NumFactory.create(2), curve.getSegment(2).getY());
-        assertEquals(NumFactory.create(0.5), curve.getSegment(2).getGrad());
+        assertEquals(num_factory.create(1), curve.getSegment(2).getX());
+        assertEquals(num_factory.create(2), curve.getSegment(2).getY());
+        assertEquals(num_factory.create(0.5), curve.getSegment(2).getGrad());
 
-        assertEquals(NumFactory.create(3), curve.getSegment(3).getX());
-        assertEquals(NumFactory.create(3), curve.getSegment(3).getY());
-        assertEquals(NumFactory.create(0.4), curve.getSegment(3).getGrad());
+        assertEquals(num_factory.create(3), curve.getSegment(3).getX());
+        assertEquals(num_factory.create(3), curve.getSegment(3).getY());
+        assertEquals(num_factory.create(0.4), curve.getSegment(3).getGrad());
     }
 }

@@ -3,16 +3,18 @@ package de.uni_kl.cs.discodnc.gsi_input;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uni_kl.cs.discodnc.gsi_input.curves.ArrivalCurve;
-import de.uni_kl.cs.discodnc.gsi_input.curves.Curve;
-import de.uni_kl.cs.discodnc.gsi_input.curves.LinearSegment;
-import de.uni_kl.cs.discodnc.gsi_input.numbers.Num;
-import de.uni_kl.cs.discodnc.gsi_input.numbers.NumFactory;
+import de.uni_kl.cs.discodnc.Calculator;
+import de.uni_kl.cs.discodnc.curves.ArrivalCurve;
+import de.uni_kl.cs.discodnc.curves.Curve;
+import de.uni_kl.cs.discodnc.curves.LinearSegment;
+import de.uni_kl.cs.discodnc.numbers.Num;
 
 /**
  * @author Malte Schütze
  */
 public class PseudoPeriodicFunction {
+	private Num num_factory = Num.getFactory(Calculator.getInstance().getNumBackend());
+	private Curve curve_factory = Calculator.getInstance().getCurveFactory();
 
     public final long periodBegin;
     public final long periodLength;
@@ -54,7 +56,7 @@ public class PseudoPeriodicFunction {
         // f(x) - x*(increment/length)
         // This guarantees that the last segment will always be above the curve
         int lastSegmentStartIdx = 0;
-        Num maxVerticalOffset = NumFactory.createZero();
+        Num maxVerticalOffset = num_factory.createZero();
 
         // Note that we only need to check the increment points, every other point will be closer to the long-term line
         for (int i = 0; i < incrementTimeSteps.size(); i++) {
@@ -73,13 +75,13 @@ public class PseudoPeriodicFunction {
         List<Integer> segmentPoints = getConcaveHullSegmentPoints(lastSegmentStartIdx, lastSegmentGrad);
         if (segmentPoints == null) {
             System.out.println("Unable to find a concave hull, using a very rough approximation");
-            Curve curve = new ArrivalCurve();
-            curve.addSegment(LinearSegment.createZeroSegment());
-            curve.addSegment(new LinearSegment(NumFactory.createZero(), maxVerticalOffset, lastSegmentGrad, true));
-            return new ArrivalCurve(curve);
+            ArrivalCurve arrival_curve = curve_factory.createArrivalCurve();
+            arrival_curve.addSegment(LinearSegment.createHorizontalLine(0));
+            arrival_curve.addSegment(LinearSegment.createLinearSegment(num_factory.createZero(), maxVerticalOffset, lastSegmentGrad, true));
+            return arrival_curve;
         }
 
-        Curve curve = new ArrivalCurve();
+        ArrivalCurve arrival_curve = curve_factory.createArrivalCurve();
         for (int i = 0; i < segmentPoints.size(); i++) {
             int fromIdx = segmentPoints.get(i);
             int toIdx = i == segmentPoints.size() - 1 ? lastSegmentStartIdx : segmentPoints.get(i + 1);
@@ -91,16 +93,16 @@ public class PseudoPeriodicFunction {
             Num slope = slope(fromIdx, toIdx);
 
             long startTime = incrementTimeSteps.get(fromIdx);
-            Num time = NumFactory.create(startTime == 0 ? 0 : startTime - 1);
-            Num value = NumFactory.create(incrementValues.get(fromIdx));
-            curve.addSegment(new LinearSegment(time, value, slope, true));
+            Num time = num_factory.create(startTime == 0 ? 0 : startTime - 1);
+            Num value = num_factory.create(incrementValues.get(fromIdx));
+            arrival_curve.addSegment(LinearSegment.createLinearSegment(time, value, slope, true));
         }
 
-        Num lastSegmentTime = NumFactory.create(incrementTimeSteps.get(lastSegmentStartIdx) - 1);
-        Num lastSegmentValue = NumFactory.create(incrementValues.get(lastSegmentStartIdx));
-        curve.addSegment(new LinearSegment(lastSegmentTime, lastSegmentValue, lastSegmentGrad, true));
+        Num lastSegmentTime = num_factory.create(incrementTimeSteps.get(lastSegmentStartIdx) - 1);
+        Num lastSegmentValue = num_factory.create(incrementValues.get(lastSegmentStartIdx));
+        arrival_curve.addSegment(LinearSegment.createLinearSegment(lastSegmentTime, lastSegmentValue, lastSegmentGrad, true));
 
-        return new ArrivalCurve(curve);
+        return arrival_curve;
     }
 
     /**
@@ -152,7 +154,7 @@ public class PseudoPeriodicFunction {
     }
 
     private Num rational(double num, long den) {
-        return NumFactory.create(num / den);
+        return num_factory.create(num / den);
     }
 
     private Num slope(int first, int second) {

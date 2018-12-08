@@ -16,11 +16,22 @@
 .idea/
 target/
 dependency-reduced-pom.xml
-
+.classpath
+.project
+.settings
+.DS_Store
 
 # Compiler artefacts
 *.jar
 *.class
 
+# Misc
 .DS_STORE
 .~lock.*
+
+# Misc folders
+/bin/
+/target/
+/doc/
+/lib/*
+

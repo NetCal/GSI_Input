@@ -1,4 +1,4 @@
-package unikl.disco;
+package de.uni_kl.cs.discodnc.gsi_input;
 
 import de.uni_kl.cs.discodnc.gsi_input.StepFunction;
 import junit.framework.TestCase;

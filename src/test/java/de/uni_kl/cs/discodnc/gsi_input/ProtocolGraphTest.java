@@ -1,4 +1,4 @@
-package unikl.disco;
+package de.uni_kl.cs.discodnc.gsi_input;
 
 import junit.framework.TestCase;
 
@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.uni_kl.cs.discodnc.Calculator;
+import de.uni_kl.cs.discodnc.curves.ArrivalCurve;
 import de.uni_kl.cs.discodnc.gsi_input.Block;
 import de.uni_kl.cs.discodnc.gsi_input.DotGraphParser;
 import de.uni_kl.cs.discodnc.gsi_input.FullyConnectedProtocolGraph;
 import de.uni_kl.cs.discodnc.gsi_input.MatplotlibOutputFormatter;
 import de.uni_kl.cs.discodnc.gsi_input.ProtocolGraph;
 import de.uni_kl.cs.discodnc.gsi_input.PseudoPeriodicFunction;
-import de.uni_kl.cs.discodnc.gsi_input.curves.ArrivalCurve;
-import de.uni_kl.cs.discodnc.gsi_input.numbers.Num;
-import de.uni_kl.cs.discodnc.gsi_input.numbers.NumFactory;
+import de.uni_kl.cs.discodnc.numbers.Num;
 
 /**
  * @author Malte Schütze
@@ -73,10 +73,11 @@ public class ProtocolGraphTest extends TestCase {
         }
     }
 
+    Num num_factory = Num.getFactory(Calculator.getInstance().getNumBackend());
     private void assertSegmentAboveCurve(PseudoPeriodicFunction f, ArrivalCurve curve, long time) {
-        Num x = NumFactory.create(time);
+        Num x = num_factory.create(time);
         int segmentId = curve.getSegmentDefining(x);
-        assertTrue(curve.getSegment(segmentId).f(x).geq(NumFactory.create(f.getValue(time))));
+        assertTrue(curve.getSegment(segmentId).f(x).geq(num_factory.create(f.getValue(time))));
     }
 
     public void testBlocksToSuperBlock() {

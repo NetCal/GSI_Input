@@ -1,12 +1,14 @@
 package de.uni_kl.cs.discodnc.gsi_input;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-import org.apache.commons.lang.time.DurationFormatUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
 
 /**
  * @author Malte Schütze

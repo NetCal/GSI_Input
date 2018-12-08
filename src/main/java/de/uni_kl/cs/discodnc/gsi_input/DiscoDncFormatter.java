@@ -1,6 +1,6 @@
 package de.uni_kl.cs.discodnc.gsi_input;
 
-import de.uni_kl.cs.discodnc.gsi_input.curves.ArrivalCurve;
+import de.uni_kl.cs.discodnc.curves.ArrivalCurve;
 
 /**
  * @author Malte Schütze

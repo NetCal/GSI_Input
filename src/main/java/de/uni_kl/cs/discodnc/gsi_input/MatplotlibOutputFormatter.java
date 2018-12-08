@@ -3,8 +3,9 @@ package de.uni_kl.cs.discodnc.gsi_input;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.uni_kl.cs.discodnc.gsi_input.curves.ArrivalCurve;
-import de.uni_kl.cs.discodnc.gsi_input.numbers.NumFactory;
+import de.uni_kl.cs.discodnc.Calculator;
+import de.uni_kl.cs.discodnc.curves.ArrivalCurve;
+import de.uni_kl.cs.discodnc.numbers.Num;
 
 /**
  * @author Malte Schütze
@@ -52,7 +53,9 @@ public class MatplotlibOutputFormatter implements OutputFormatter {
                 ys.append(curve.getSegment(i).f(curve.getSegment(i + 1).getX()).doubleValue());
             } else {
                 xs.append(finalSegmentEnd);
-                ys.append(curve.getSegment(i).f(NumFactory.create(finalSegmentEnd)).doubleValue());
+                ys.append(curve.getSegment(i).f(
+                		Num.getFactory(Calculator.getInstance().getNumBackend())
+                		.create(finalSegmentEnd)).doubleValue());
             }
         }
 
