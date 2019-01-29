@@ -34,4 +34,7 @@ dependency-reduced-pom.xml
 /target/
 /doc/
 /lib/*
-
+!/lib/NetCal-DNC-2.5.0.jar
+!/lib/NetCal-DNC-LICENSE
+!/lib/NetCal-NumBackend-1.0.0.jar
+!/lib/NetCal-NumBackend-LICENSE

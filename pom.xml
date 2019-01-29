@@ -62,7 +62,7 @@
             <groupId>de.uni_kl.cs.discodnc</groupId>
             <artifactId>DiscoDNC</artifactId>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/DiscoDNC-2.5.0-SNAPSHOT.jar</systemPath>
+			<systemPath>${project.basedir}/lib/NetCal-DNC-2.5.0.jar</systemPath>
             <version>2.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -70,7 +70,7 @@
 			<artifactId>NumBackend</artifactId>
 			<version>${numbackend.version}</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/NumBackend-1.0.jar</systemPath>
+			<systemPath>${project.basedir}/lib/NetCal-NumBackend-1.0.0.jar</systemPath>
 		</dependency>
         <dependency>
             <groupId>guru.nidi</groupId>
